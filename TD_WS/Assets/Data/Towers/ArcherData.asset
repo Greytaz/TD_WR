@@ -18,10 +18,10 @@ MonoBehaviour:
   prefab: {fileID: 0}
   tier1:
     cost: 100
-    damage: 10
-    minDamage: 10
-    maxDamage: 15
-    critChance: 0.15
+    damage: 20
+    minDamage: 12
+    maxDamage: 22
+    critChance: 0.18
     critMultiplier: 2
     range: 6
     fireRate: 2.5

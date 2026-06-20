@@ -16,6 +16,19 @@ namespace TowerDefense.Core
         public float timeBetweenWaves = 15f;
         public float waveDifficultyScaling = 1.15f; // +15% enemy health per procedural wave
 
+        [Header("Boss Settings")]
+        public EnemyData bossEnemyData;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (bossEnemyData == null)
+            {
+                bossEnemyData = UnityEditor.AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Data/Enemies/BossEnemy.asset");
+            }
+        }
+#endif
+
         private int currentWaveIndex = 0;
         private float waveTimer = 0f;
         private bool isSpawning = false;
@@ -104,32 +117,49 @@ namespace TowerDefense.Core
                 speedMult = wave.speedMultiplier * Mathf.Min(1.5f, 1f + (currentWaveIndex * 0.02f)); // Caps speed scale at +50%
             }
 
-            foreach (var group in wave.spawnGroups)
+            // Check if this is a boss wave (every 5th wave)
+            if (currentWaveIndex % 5 == 0)
             {
-                for (int i = 0; i < group.count; i++)
+                if (bossEnemyData != null)
                 {
-                    if (GameManager.Instance.CurrentState == GameState.GameOver) yield break;
-
-                    SpawnEnemy(group.enemyData, waypoints, hpMult, speedMult);
-                    
-                    // Spawn in clusters of 3
-                    if (i < group.count - 1)
+                    SpawnEnemy(bossEnemyData, waypoints, hpMult, speedMult);
+                }
+                else
+                {
+                    Debug.LogWarning("BossEnemyData is not assigned on WaveManager, cannot spawn boss for wave " + currentWaveIndex);
+                }
+                yield return null;
+            }
+            else
+            {
+                // Regular wave: spawn regular enemy groups
+                foreach (var group in wave.spawnGroups)
+                {
+                    for (int i = 0; i < group.count; i++)
                     {
-                        if ((i + 1) % 3 != 0)
+                        if (GameManager.Instance.CurrentState == GameState.GameOver) yield break;
+
+                        SpawnEnemy(group.enemyData, waypoints, hpMult, speedMult);
+                        
+                        // Spawn in clusters of 3
+                        if (i < group.count - 1)
                         {
-                            // Within a cluster of 3, spawn very close together
-                            yield return new WaitForSeconds(0.2f);
+                            if ((i + 1) % 3 != 0)
+                            {
+                                // Within a cluster of 3, spawn very close together
+                                yield return new WaitForSeconds(0.2f);
+                            }
+                            else
+                            {
+                                // Wait between clusters of 3
+                                yield return new WaitForSeconds(group.spawnInterval * 3f);
+                            }
                         }
                         else
                         {
-                            // Wait between clusters of 3
-                            yield return new WaitForSeconds(group.spawnInterval * 3f);
+                            // Last enemy of the group
+                            yield return new WaitForSeconds(group.spawnInterval);
                         }
-                    }
-                    else
-                    {
-                        // Last enemy of the group
-                        yield return new WaitForSeconds(group.spawnInterval);
                     }
                 }
             }

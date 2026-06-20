@@ -1230,29 +1230,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 241474346}
   m_CullTransparentMesh: 1
---- !u!114 &310612225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 843322b6b4d79b64aa9259c0e2c16ea0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.WaveData
-  waveName: 'Wave 2: Accelerated Threat'
-  spawnGroups:
-  - enemyData: {fileID: 11400000, guid: 188c7caff38574c46a8d4a3eb6f7bd47, type: 2}
-    count: 8
-    spawnInterval: 1.2
-  - enemyData: {fileID: 11400000, guid: e4fcb72e20772194aaa66763f0e17246, type: 2}
-    count: 4
-    spawnInterval: 1
-  healthMultiplier: 1.5
-  speedMultiplier: 1
-  waveBonusGold: 60
 --- !u!1 &325640991
 GameObject:
   m_ObjectHideFlags: 0
@@ -1923,9 +1900,9 @@ MonoBehaviour:
   tier1:
     cost: 100
     damage: 10
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
+    minDamage: 12
+    maxDamage: 16
+    critChance: 0.15
     critMultiplier: 2
     range: 6
     fireRate: 2.5
@@ -3023,26 +3000,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 991037418}
   m_CullTransparentMesh: 1
---- !u!114 &997187713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 843322b6b4d79b64aa9259c0e2c16ea0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.WaveData
-  waveName: 'Wave 1: First Contact'
-  spawnGroups:
-  - enemyData: {fileID: 11400000, guid: 188c7caff38574c46a8d4a3eb6f7bd47, type: 2}
-    count: 5
-    spawnInterval: 1.5
-  healthMultiplier: 1
-  speedMultiplier: 1
-  waveBonusGold: 50
 --- !u!1 &1025855952
 GameObject:
   m_ObjectHideFlags: 0
@@ -6492,11 +6449,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.WaveManager
   preconfiguredWaves:
-  - {fileID: 997187713}
-  - {fileID: 310612225}
-  - {fileID: 310612225}
+  - {fileID: 11400000, guid: 1c46fa48250b9c24095b30bf84835690, type: 2}
+  - {fileID: 11400000, guid: 469f82eb21bd0744084b0c2ece45ff6e, type: 2}
   timeBetweenWaves: 15
   waveDifficultyScaling: 1.15
+  bossEnemyData: {fileID: 11400000, guid: 1b1fd67c597e9ad46b35196e68fa45e0, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
