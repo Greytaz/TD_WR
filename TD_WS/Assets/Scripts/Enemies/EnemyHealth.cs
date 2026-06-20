@@ -56,7 +56,7 @@ namespace TowerDefense.Enemies
             HandleStatusEffects();
         }
 
-        public void TakeDamage(float damage, DamageType type)
+        public void TakeDamage(float damage, DamageType type, bool isCritical = false)
         {
             if (isDead) return;
 
@@ -102,7 +102,16 @@ namespace TowerDefense.Enemies
                                 color = new Color(0.2f, 0.6f, 1f); // Blue for Elemental
                                 break;
                         }
-                        ft.Setup(Mathf.RoundToInt(finalDamage).ToString(), color);
+
+                        if (isCritical)
+                        {
+                            color = new Color(1.0f, 0.15f, 0.15f); // Crimson Red for Crit
+                            ft.Setup($"CRIT! {Mathf.RoundToInt(finalDamage)}", color, 6f);
+                        }
+                        else
+                        {
+                            ft.Setup(Mathf.RoundToInt(finalDamage).ToString(), color);
+                        }
                     }
                 }
             }

@@ -61,12 +61,14 @@ namespace TowerDefense.Projectiles
             // Radial splash damage using OverlapSphere
             Collider[] colliders = Physics.OverlapSphere(transform.position, stats.splashRadius);
             
+            float dmg = stats.GetRandomDamage(out bool isCrit);
+
             foreach (var col in colliders)
             {
                 EnemyHealth enemy = col.GetComponent<EnemyHealth>();
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    enemy.TakeDamage(stats.damage, DamageType.Explosive);
+                    enemy.TakeDamage(dmg, DamageType.Explosive, isCrit);
 
                     // Cannon upgrade slow or burn (DOT)
                     if (stats.burnDamagePerSecond > 0f && stats.burnDuration > 0f)

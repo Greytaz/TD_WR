@@ -26,11 +26,12 @@ namespace TowerDefense.Effects
             textMesh.color = defaultColor;
         }
 
-        public void Setup(string text, Color color)
+        public void Setup(string text, Color color, float fontSize = 4f)
         {
             if (textMesh == null) textMesh = GetComponent<TextMeshPro>();
             textMesh.text = text;
             textMesh.color = color;
+            textMesh.fontSize = fontSize;
             timer = duration;
             
             if (Camera.main != null)

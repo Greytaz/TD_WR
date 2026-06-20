@@ -19,6 +19,10 @@ MonoBehaviour:
   tier1:
     cost: 100
     damage: 10
+    minDamage: 10
+    maxDamage: 15
+    critChance: 0.15
+    critMultiplier: 2
     range: 6
     fireRate: 2.5
     projectileSpeed: 15
@@ -32,6 +36,10 @@ MonoBehaviour:
   tier2:
     cost: 120
     damage: 16
+    minDamage: 16
+    maxDamage: 22
+    critChance: 0.15
+    critMultiplier: 2
     range: 7
     fireRate: 2.8
     projectileSpeed: 17
@@ -45,6 +53,10 @@ MonoBehaviour:
   tier3:
     cost: 150
     damage: 25
+    minDamage: 25
+    maxDamage: 32
+    critChance: 0.15
+    critMultiplier: 2
     range: 8
     fireRate: 3.2
     projectileSpeed: 20

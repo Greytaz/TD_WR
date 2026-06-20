@@ -40,9 +40,34 @@ namespace TowerDefense.Data
     {
         public int cost;
         public float damage;
+        
+        [Header("Damage Setup")]
+        public float minDamage;
+        public float maxDamage;
+        public float critChance; // 0 to 1 (e.g. 0.15f is 15%)
+        public float critMultiplier = 2.0f;
+        
         public float range;
         public float fireRate; // Attacks per second
         public float projectileSpeed;
+
+        public float GetRandomDamage(out bool isCrit)
+        {
+            float baseDmg = damage;
+            if (minDamage > 0f && maxDamage > 0f)
+            {
+                baseDmg = Random.Range(minDamage, maxDamage);
+            }
+
+            isCrit = false;
+            if (critChance > 0f && Random.value <= critChance)
+            {
+                isCrit = true;
+                baseDmg *= critMultiplier;
+            }
+
+            return baseDmg;
+        }
         
         [Header("Mage/Cannon Special Effects")]
         public float splashRadius;      // For Cannon / Mage splash

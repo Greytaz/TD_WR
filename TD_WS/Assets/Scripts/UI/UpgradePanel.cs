@@ -98,7 +98,12 @@ namespace TowerDefense.UI
             if (towerStatsText != null)
             {
                 var stats = selectedTower.CurrentStats;
-                towerStatsText.text = $"Dmg: {stats.damage}\nRange: {stats.range}\nSpd: {stats.fireRate}/s";
+                string damageText = (stats.minDamage > 0f && stats.maxDamage > 0f) ? $"{stats.minDamage:F0}-{stats.maxDamage:F0}" : stats.damage.ToString("F0");
+                if (stats.critChance > 0f)
+                {
+                    damageText += $" ({stats.critChance * 100f:F0}% Crit)";
+                }
+                towerStatsText.text = $"Dmg: {damageText}\nRange: {stats.range}\nSpd: {stats.fireRate}/s";
             }
 
             // Upgrade Button Setup

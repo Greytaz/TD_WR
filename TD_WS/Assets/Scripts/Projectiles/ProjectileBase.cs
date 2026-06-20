@@ -62,7 +62,8 @@ namespace TowerDefense.Projectiles
             if (target != null && target.gameObject.activeInHierarchy)
             {
                 // General default single target hit (e.g. Archer physical arrow)
-                target.TakeDamage(stats.damage, DamageType.Physical);
+                float dmg = stats.GetRandomDamage(out bool isCrit);
+                target.TakeDamage(dmg, DamageType.Physical, isCrit);
             }
         }
     }
