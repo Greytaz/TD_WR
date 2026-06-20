@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 843322b6b4d79b64aa9259c0e2c16ea0, type: 3}
+  m_Name: Wave1
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.WaveData
+  waveName: 'Wave 1: First Contact'
+  spawnGroups:
+  - enemyData: {fileID: 11400000, guid: 188c7caff38574c46a8d4a3eb6f7bd47, type: 2}
+    count: 15
+    spawnInterval: 1.5
+  healthMultiplier: 1
+  speedMultiplier: 1
+  waveBonusGold: 50
