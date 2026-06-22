@@ -8,7 +8,8 @@ namespace TowerDefense.Core
     {
         Playing,
         Paused,
-        GameOver
+        GameOver,
+        MainMenu
     }
 
     public class GameManager : MonoBehaviour
@@ -23,10 +24,21 @@ namespace TowerDefense.Core
         private int currentGold;
         private GameState currentState = GameState.Playing;
         private int currentWaveIndex = 0;
+        private float targetTimeScale = 1f;
 
         public int CurrentHP => currentHP;
         public int CurrentGold => currentGold;
         public GameState CurrentState => currentState;
+        public float TargetTimeScale => targetTimeScale;
+
+        public void SetGameSpeed(float speed)
+        {
+            targetTimeScale = speed;
+            if (currentState == GameState.Playing)
+            {
+                Time.timeScale = targetTimeScale;
+            }
+        }
 
         private void Awake()
         {
@@ -40,12 +52,16 @@ namespace TowerDefense.Core
                 return;
             }
 
-            Time.timeScale = 1f;
+            targetTimeScale = 1f;
+            Time.timeScale = 0f; // Start paused for Main Menu
+            currentState = GameState.MainMenu;
         }
 
         private void Start()
         {
-            ResetGame();
+            // Do not call ResetGame automatically. Wait for UI interactions.
+            currentState = GameState.MainMenu;
+            Time.timeScale = 0f;
         }
 
         private void OnEnable()
@@ -66,10 +82,24 @@ namespace TowerDefense.Core
 
         private void ResetGame()
         {
+            // Clear towers from grid
+            if (GridManager.Instance != null)
+            {
+                GridManager.Instance.ClearGrid();
+            }
+
+            // Deactivate and return all active enemies to the pool
+            var activeEnemies = Object.FindObjectsByType<TowerDefense.Enemies.EnemyBase>(FindObjectsSortMode.None);
+            foreach (var enemy in activeEnemies)
+            {
+                enemy.gameObject.SetActive(false);
+            }
+
             currentHP = startHP;
             currentGold = startGold;
             currentState = GameState.Playing;
             currentWaveIndex = 0;
+            targetTimeScale = 1f;
             Time.timeScale = 1f;
 
             EventBus.TriggerBaseHPChanged(currentHP);
@@ -144,7 +174,7 @@ namespace TowerDefense.Core
             if (currentState == GameState.Paused)
             {
                 currentState = GameState.Playing;
-                Time.timeScale = 1f;
+                Time.timeScale = targetTimeScale;
             }
             else
             {
@@ -164,10 +194,50 @@ namespace TowerDefense.Core
             EventBus.TriggerGameOver(currentWaveIndex);
         }
 
+        public void GoToMainMenu()
+        {
+            currentState = GameState.MainMenu;
+            Time.timeScale = 0f;
+        }
+
         public void RestartGame()
         {
             ResetGame();
             EventBus.TriggerGameRestarted();
+        }
+
+        public void StartNewGame()
+        {
+            ResetGame();
+            if (WaveManager.Instance != null)
+            {
+                WaveManager.Instance.SetWaveIndex(0);
+            }
+        }
+
+        public void ContinueGame()
+        {
+            int bestWave = SaveSystem.LoadBestWave();
+            currentHP = startHP;
+            
+            // Give them starting gold plus 120 gold for each wave completed, so they can rebuild defenses
+            currentGold = startGold + Mathf.Max(0, (bestWave - 1) * 120);
+            currentState = GameState.Playing;
+            targetTimeScale = 1f;
+            Time.timeScale = 1f;
+
+            EventBus.TriggerBaseHPChanged(currentHP);
+            EventBus.TriggerGoldChanged(currentGold);
+
+            if (WaveManager.Instance != null)
+            {
+                // WaveManager's currentWaveIndex will be incremented when the wave starts,
+                // so we set it to (bestWave - 1) so that it starts at bestWave.
+                WaveManager.Instance.SetWaveIndex(Mathf.Max(0, bestWave - 1));
+            }
+
+            currentWaveIndex = bestWave;
+            EventBus.TriggerWaveStarted(bestWave);
         }
     }
 }

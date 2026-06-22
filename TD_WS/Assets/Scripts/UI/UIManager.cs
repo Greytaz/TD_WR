@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
 using TowerDefense.Core;
 using TowerDefense.Utils;
 
@@ -16,17 +17,29 @@ namespace TowerDefense.UI
         public TextMeshProUGUI waveText;
         public TextMeshProUGUI enemyCountText;
         public Button nextWaveButton;
+        public Button speedButton;
+        public TextMeshProUGUI speedText;
+        public Button hudMenuButton;
 
         [Header("Pause Overlay")]
         public GameObject pausePanel;
         public Button resumeButton;
         public Button restartButton;
         public Button quitButton;
+        public Button mainMenuButton;
 
         [Header("Game Over Overlay")]
         public GameObject gameOverPanel;
         public TextMeshProUGUI wavesSurvivedText;
         public Button gameOverRestartButton;
+        public Button gameOverMainMenuButton;
+        public Button gameOverQuitButton;
+
+        [Header("Main Menu Overlay")]
+        public GameObject mainMenuPanel;
+        public Button startButton;
+        public Button continueButton;
+        public TextMeshProUGUI bestWaveText;
 
         private void Awake()
         {
@@ -49,8 +62,44 @@ namespace TowerDefense.UI
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
             if (gameOverRestartButton != null) gameOverRestartButton.onClick.AddListener(OnRestartClicked);
             if (nextWaveButton != null) nextWaveButton.onClick.AddListener(OnNextWaveClicked);
+            if (speedButton != null) speedButton.onClick.AddListener(OnSpeedButtonClicked);
+            if (startButton != null) startButton.onClick.AddListener(OnStartClicked);
+            if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
+            if (hudMenuButton != null) hudMenuButton.onClick.AddListener(OnHUDMenuClicked);
+            if (mainMenuButton != null) mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+            if (gameOverMainMenuButton != null) gameOverMainMenuButton.onClick.AddListener(OnMainMenuClicked);
+            if (gameOverQuitButton != null) gameOverQuitButton.onClick.AddListener(OnQuitClicked);
 
             HideAllOverlays();
+            UpdateSpeedHUD();
+
+            // Enable MainMenuPanel on start
+            if (mainMenuPanel != null)
+            {
+                mainMenuPanel.SetActive(true);
+                
+                int bestWave = SaveSystem.LoadBestWave();
+                
+                // Set continue button interactable if a save exists
+                if (continueButton != null)
+                {
+                    continueButton.interactable = (bestWave > 0);
+                }
+
+                // Show best wave achieved
+                if (bestWaveText != null)
+                {
+                    if (bestWave > 0)
+                    {
+                        bestWaveText.text = $"Best Wave: {bestWave}";
+                        bestWaveText.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        bestWaveText.gameObject.SetActive(false);
+                    }
+                }
+            }
         }
 
         private void OnEnable()
@@ -60,6 +109,7 @@ namespace TowerDefense.UI
             EventBus.OnWaveStarted += UpdateWaveHUD;
             EventBus.OnGameOver += ShowGameOverScreen;
             EventBus.OnGameRestarted += HideAllOverlays;
+            EventBus.OnGameRestarted += UpdateSpeedHUD;
         }
 
         private void OnDisable()
@@ -69,6 +119,7 @@ namespace TowerDefense.UI
             EventBus.OnWaveStarted -= UpdateWaveHUD;
             EventBus.OnGameOver -= ShowGameOverScreen;
             EventBus.OnGameRestarted -= HideAllOverlays;
+            EventBus.OnGameRestarted -= UpdateSpeedHUD;
         }
 
         private void Update()
@@ -92,6 +143,25 @@ namespace TowerDefense.UI
                 {
                     enemyCountText.text = $"Next wave in: {WaveManager.Instance.WaveTimer:F1}s";
                 }
+            }
+
+            // Handle Escape key to pause/unpause
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                if (GameManager.Instance != null && 
+                    (GameManager.Instance.CurrentState == GameState.Playing || GameManager.Instance.CurrentState == GameState.Paused))
+                {
+                    TogglePauseMenu();
+                }
+            }
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            // Pause the game if we lose focus and are currently playing
+            if (!hasFocus && GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Playing)
+            {
+                TogglePauseMenu();
             }
         }
 
@@ -136,11 +206,63 @@ namespace TowerDefense.UI
         {
             if (pausePanel != null) pausePanel.SetActive(false);
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        }
+
+        private void OnStartClicked()
+        {
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+            GameManager.Instance.StartNewGame();
+        }
+
+        private void OnContinueClicked()
+        {
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+            GameManager.Instance.ContinueGame();
         }
 
         private void OnResumeClicked()
         {
             TogglePauseMenu();
+        }
+
+        private void OnHUDMenuClicked()
+        {
+            if (GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Playing)
+            {
+                TogglePauseMenu();
+            }
+        }
+
+        private void OnMainMenuClicked()
+        {
+            HideAllOverlays();
+            if (mainMenuPanel != null)
+            {
+                mainMenuPanel.SetActive(true);
+                
+                int bestWave = SaveSystem.LoadBestWave();
+                if (continueButton != null)
+                {
+                    continueButton.interactable = (bestWave > 0);
+                }
+                if (bestWaveText != null)
+                {
+                    if (bestWave > 0)
+                    {
+                        bestWaveText.text = $"Best Wave: {bestWave}";
+                        bestWaveText.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        bestWaveText.gameObject.SetActive(false);
+                    }
+                }
+            }
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.GoToMainMenu();
+            }
         }
 
         private void OnRestartClicked()
@@ -163,6 +285,25 @@ namespace TowerDefense.UI
             if (WaveManager.Instance != null)
             {
                 WaveManager.Instance.StartNextWave();
+            }
+        }
+
+        private void OnSpeedButtonClicked()
+        {
+            if (GameManager.Instance == null) return;
+
+            float currentSpeed = GameManager.Instance.TargetTimeScale;
+            float newSpeed = (currentSpeed == 1f) ? 2f : 1f;
+
+            GameManager.Instance.SetGameSpeed(newSpeed);
+            UpdateSpeedHUD();
+        }
+
+        public void UpdateSpeedHUD()
+        {
+            if (speedText != null && GameManager.Instance != null)
+            {
+                speedText.text = GameManager.Instance.TargetTimeScale >= 2f ? "2x" : "1x";
             }
         }
     }

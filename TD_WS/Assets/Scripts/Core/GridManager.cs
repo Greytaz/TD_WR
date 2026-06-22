@@ -222,6 +222,26 @@ namespace TowerDefense.Core
             }
         }
 
+        public void ClearGrid()
+        {
+            if (towerGrid == null) return;
+            for (int x = 0; x < gridWidth; x++)
+            {
+                for (int z = 0; z < gridHeight; z++)
+                {
+                    if (towerGrid[x, z] != null)
+                    {
+                        Destroy(towerGrid[x, z].gameObject);
+                        towerGrid[x, z] = null;
+                        if (visualTiles != null && visualTiles[x, z] != null)
+                        {
+                            visualTiles[x, z].SetActive(true);
+                        }
+                    }
+                }
+            }
+        }
+
         public TowerBase GetTowerAtCell(int x, int z)
         {
             if (x >= 0 && x < gridWidth && z >= 0 && z < gridHeight)
