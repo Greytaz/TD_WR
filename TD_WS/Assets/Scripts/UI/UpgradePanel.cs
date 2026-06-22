@@ -26,10 +26,19 @@ namespace TowerDefense.UI
         public TMP_Dropdown priorityDropdown;
 
         private TowerBase selectedTower;
+        private UnityEngine.CanvasGroup upgradeButtonCanvasGroup;
 
         private void Start()
         {
-            if (upgradeButton != null) upgradeButton.onClick.AddListener(OnUpgradeClicked);
+            if (upgradeButton != null)
+            {
+                upgradeButton.onClick.AddListener(OnUpgradeClicked);
+                upgradeButtonCanvasGroup = upgradeButton.GetComponent<UnityEngine.CanvasGroup>();
+                if (upgradeButtonCanvasGroup == null)
+                {
+                    upgradeButtonCanvasGroup = upgradeButton.gameObject.AddComponent<UnityEngine.CanvasGroup>();
+                }
+            }
             if (sellButton != null) sellButton.onClick.AddListener(OnSellClicked);
             
             if (priorityDropdown != null)
@@ -111,6 +120,7 @@ namespace TowerDefense.UI
             {
                 if (upgradeButton != null) upgradeButton.interactable = false;
                 if (upgradeCostText != null) upgradeCostText.text = "MAX TIER";
+                if (upgradeButtonCanvasGroup != null) upgradeButtonCanvasGroup.alpha = 0.5f;
             }
             else
             {
@@ -119,9 +129,14 @@ namespace TowerDefense.UI
                 
                 if (upgradeCostText != null) upgradeCostText.text = $"Upgrade: {cost}G";
                 
+                bool canAfford = GameManager.Instance.CurrentGold >= cost;
                 if (upgradeButton != null)
                 {
-                    upgradeButton.interactable = GameManager.Instance.CurrentGold >= cost;
+                    upgradeButton.interactable = canAfford;
+                }
+                if (upgradeButtonCanvasGroup != null)
+                {
+                    upgradeButtonCanvasGroup.alpha = canAfford ? 1.0f : 0.5f;
                 }
             }
 
