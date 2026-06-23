@@ -15,8 +15,8 @@ MonoBehaviour:
   enemyName: Fast
   enemyType: 2
   prefab: {fileID: 8410736831365142723, guid: b30864c09a00e6d41b411bcbddb7a776, type: 3}
-  maxHealth: 40
-  speed: 4.5
+  maxHealth: 18
+  speed: 3.5
   goldReward: 6
   physicalResistance: 1
   explosiveResistance: 1

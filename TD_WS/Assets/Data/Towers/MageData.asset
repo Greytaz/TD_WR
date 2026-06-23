@@ -15,16 +15,16 @@ MonoBehaviour:
   towerName: Mage
   towerType: 2
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 34690925557482492, guid: adfd26f3580ec1f4fa7cf40955e4dba6, type: 3}
   tier1:
     cost: 120
-    damage: 15
-    minDamage: 12
-    maxDamage: 18
+    damage: 8
+    minDamage: 6
+    maxDamage: 10
     critChance: 0
     critMultiplier: 1
-    range: 5.5
-    fireRate: 1.2
+    range: 4.2
+    fireRate: 0.95
     projectileSpeed: 12
     splashRadius: 0
     slowFactor: 0.5
@@ -67,3 +67,60 @@ MonoBehaviour:
     burnDuration: 0
     stunDuration: 1
     stunChance: 0.25
+  baseTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 1.4
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 3.2
+    critChanceBonus: 0
+  bodyTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 0
+    fireRateMultiplier: 1.4
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 0
+    fireRateMultiplier: 1.9
+    rangeBonus: 0
+    critChanceBonus: 0
+  weaponTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 8
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0.08
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 20
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0.2

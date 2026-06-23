@@ -9,6 +9,19 @@ namespace TowerDefense.Data
         Mage
     }
 
+    [System.Serializable]
+    public class TowerPartData
+    {
+        public GameObject prefab;
+        public int cost;
+        
+        [Header("Stat Buffs")]
+        public float damageBonus;
+        public float fireRateMultiplier = 1.0f;
+        public float rangeBonus;
+        public float critChanceBonus;
+    }
+
     [CreateAssetMenu(fileName = "NewTowerData", menuName = "Tower Defense/Tower Data")]
     public class TowerData : ScriptableObject
     {
@@ -22,6 +35,11 @@ namespace TowerDefense.Data
         public TowerTierData tier1;
         public TowerTierData tier2;
         public TowerTierData tier3;
+
+        [Header("Modular Parts Configuration")]
+        public TowerPartData[] baseTiers = new TowerPartData[3];   // Tier 1, 2, 3
+        public TowerPartData[] bodyTiers = new TowerPartData[3];   // Tier 1, 2, 3
+        public TowerPartData[] weaponTiers = new TowerPartData[3]; // Tier 1, 2, 3
 
         public TowerTierData GetTierData(int tier)
         {

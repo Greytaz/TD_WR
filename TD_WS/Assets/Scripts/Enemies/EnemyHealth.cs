@@ -20,11 +20,13 @@ namespace TowerDefense.Enemies
         private EnemyMovement enemyMovement;
         private Renderer enemyRenderer;
         private Color originalColor;
+        private Animator enemyAnimator; // Компонент для воспроизведения анимаций жука
 
         private void Awake()
         {
             enemyMovement = GetComponent<EnemyMovement>();
             enemyRenderer = GetComponentInChildren<Renderer>();
+            enemyAnimator = GetComponentInChildren<Animator>(); // Автоматически ищем аниматор на 3D модели жука
             if (enemyRenderer != null)
             {
                 originalColor = enemyRenderer.material.color;
@@ -78,6 +80,12 @@ namespace TowerDefense.Enemies
             float finalDamage = damage * multiplier;
             currentHealth -= finalDamage;
             UpdateHealthBar();
+
+            // Проигрываем анимацию вздрагивания при попадании (Hit Reaction)
+            if (enemyAnimator != null)
+            {
+                enemyAnimator.SetTrigger("Hit");
+            }
 
             // Spawn floating damage text
             if (ObjectPool.Instance != null)
@@ -231,6 +239,12 @@ namespace TowerDefense.Enemies
         {
             if (isDead) return;
             isDead = true;
+
+            // Проигрываем анимацию смерти жука
+            if (enemyAnimator != null)
+            {
+                enemyAnimator.SetTrigger("Die");
+            }
 
             // Trigger reward
             EventBus.TriggerEnemyKilled(enemyData.goldReward);

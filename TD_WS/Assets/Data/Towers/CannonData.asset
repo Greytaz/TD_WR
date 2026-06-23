@@ -15,16 +15,16 @@ MonoBehaviour:
   towerName: Cannon
   towerType: 1
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 1203749853548968159, guid: c479c268cb27b2148b5beec4aad3dbe5, type: 3}
   tier1:
     cost: 150
-    damage: 35
-    minDamage: 30
-    maxDamage: 40
+    damage: 22
+    minDamage: 18
+    maxDamage: 26
     critChance: 0
     critMultiplier: 1
-    range: 5
-    fireRate: 0.8
+    range: 4
+    fireRate: 0.6
     projectileSpeed: 10
     splashRadius: 2.5
     slowFactor: 0
@@ -67,3 +67,60 @@ MonoBehaviour:
     burnDuration: 3
     stunDuration: 0
     stunChance: 0
+  baseTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 1.2
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 3
+    critChanceBonus: 0
+  bodyTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 0
+    fireRateMultiplier: 1.45
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 0
+    fireRateMultiplier: 2
+    rangeBonus: 0
+    critChanceBonus: 0
+  weaponTiers:
+  - prefab: {fileID: 0}
+    cost: 0
+    damageBonus: 0
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0
+  - prefab: {fileID: 0}
+    cost: 50
+    damageBonus: 15
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0.05
+  - prefab: {fileID: 0}
+    cost: 100
+    damageBonus: 38
+    fireRateMultiplier: 1
+    rangeBonus: 0
+    critChanceBonus: 0.15

@@ -137,11 +137,12 @@ namespace TowerDefense.UI
             {
                 if (waveActive)
                 {
-                    enemyCountText.text = $"Enemies: {WaveManager.Instance.ActiveEnemyCount}";
+                    enemyCountText.text = $"Enemies: {WaveManager.Instance.RemainingEnemyCount}";
                 }
                 else
                 {
-                    enemyCountText.text = $"Next wave in: {WaveManager.Instance.WaveTimer:F1}s";
+                    int incomingCount = WaveManager.Instance.GetEnemyCountForWave(WaveManager.Instance.CurrentWaveIndex + 1);
+                    enemyCountText.text = $"Enemies: {incomingCount} (Next in {WaveManager.Instance.WaveTimer:F1}s)";
                 }
             }
 

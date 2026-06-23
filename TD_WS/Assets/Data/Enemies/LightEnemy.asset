@@ -15,8 +15,8 @@ MonoBehaviour:
   enemyName: Light
   enemyType: 0
   prefab: {fileID: 4606696460073609636, guid: 9894f78a020c22f48b95f1dd4eb144b9, type: 3}
-  maxHealth: 50
-  speed: 3
+  maxHealth: 25
+  speed: 2.5
   goldReward: 5
   physicalResistance: 1
   explosiveResistance: 1

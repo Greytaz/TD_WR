@@ -1,9 +1,17 @@
 using UnityEngine;
 using TowerDefense.Core;
 using TowerDefense.Utils;
+using TowerDefense.Data;
 
 namespace TowerDefense.Towers
 {
+    public enum TowerPartType
+    {
+        Base,
+        Body,
+        Weapon
+    }
+
     public class TowerUpgrade : MonoBehaviour
     {
         public static TowerUpgrade Instance { get; private set; }
@@ -21,20 +29,50 @@ namespace TowerDefense.Towers
             }
         }
 
-        public bool UpgradeTower(TowerBase tower)
+        public bool UpgradePart(TowerBase tower, TowerPartType partType)
         {
-            if (tower == null || tower.CurrentTier >= 3) return false;
+            if (tower == null) return false;
 
-            int nextTier = tower.CurrentTier + 1;
-            Data.TowerTierData nextStats = tower.Data.GetTierData(nextTier);
+            int currentTier = 1;
+            int nextTier = 1;
+            int cost = 0;
 
-            if (nextStats == null) return false;
-
-            int cost = nextStats.cost;
+            if (partType == TowerPartType.Base)
+            {
+                currentTier = tower.BaseTier;
+                if (currentTier >= 3) return false;
+                nextTier = currentTier + 1;
+                cost = tower.Data.baseTiers[nextTier - 1].cost;
+            }
+            else if (partType == TowerPartType.Body)
+            {
+                currentTier = tower.BodyTier;
+                if (currentTier >= 3) return false;
+                nextTier = currentTier + 1;
+                cost = tower.Data.bodyTiers[nextTier - 1].cost;
+            }
+            else if (partType == TowerPartType.Weapon)
+            {
+                currentTier = tower.WeaponTier;
+                if (currentTier >= 3) return false;
+                nextTier = currentTier + 1;
+                cost = tower.Data.weaponTiers[nextTier - 1].cost;
+            }
 
             if (GameManager.Instance.SpendGold(cost))
             {
-                tower.SetTier(nextTier);
+                if (partType == TowerPartType.Base)
+                {
+                    tower.SetBaseTier(nextTier);
+                }
+                else if (partType == TowerPartType.Body)
+                {
+                    tower.SetBodyTier(nextTier);
+                }
+                else if (partType == TowerPartType.Weapon)
+                {
+                    tower.SetWeaponTier(nextTier);
+                }
                 
                 // Spawn upgrade particle burst
                 if (Effects.ParticleManager.Instance != null)
@@ -47,24 +85,34 @@ namespace TowerDefense.Towers
                 return true;
             }
 
-            Debug.Log("Not enough gold to upgrade!");
+            Debug.Log("Not enough gold to upgrade part!");
             return false;
+        }
+
+        public bool UpgradeTower(TowerBase tower)
+        {
+            // Legacy fallback, upgrades weapon/head first or can just be deprecated
+            return UpgradePart(tower, TowerPartType.Weapon);
         }
 
         public void SellTower(TowerBase tower)
         {
             if (tower == null) return;
 
-            // Compute total gold spent
+            // Compute total gold spent across all purchased modular parts
             int totalSpent = tower.Data.tier1.cost;
-            if (tower.CurrentTier >= 2)
-            {
-                totalSpent += tower.Data.tier2.cost;
-            }
-            if (tower.CurrentTier >= 3)
-            {
-                totalSpent += tower.Data.tier3.cost;
-            }
+
+            // Base upgrades
+            if (tower.BaseTier >= 2 && tower.Data.baseTiers.Length >= 2) totalSpent += tower.Data.baseTiers[1].cost;
+            if (tower.BaseTier >= 3 && tower.Data.baseTiers.Length >= 3) totalSpent += tower.Data.baseTiers[2].cost;
+
+            // Body upgrades
+            if (tower.BodyTier >= 2 && tower.Data.bodyTiers.Length >= 2) totalSpent += tower.Data.bodyTiers[1].cost;
+            if (tower.BodyTier >= 3 && tower.Data.bodyTiers.Length >= 3) totalSpent += tower.Data.bodyTiers[2].cost;
+
+            // Weapon upgrades
+            if (tower.WeaponTier >= 2 && tower.Data.weaponTiers.Length >= 2) totalSpent += tower.Data.weaponTiers[1].cost;
+            if (tower.WeaponTier >= 3 && tower.Data.weaponTiers.Length >= 3) totalSpent += tower.Data.weaponTiers[2].cost;
 
             // Refund 70%
             int refund = Mathf.FloorToInt(totalSpent * 0.70f);

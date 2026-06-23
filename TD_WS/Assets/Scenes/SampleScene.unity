@@ -1862,7 +1862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf7df97f0f40cf4ab3b561f9d8ab99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.UI.TowerButton
-  towerData: {fileID: 1602917983}
+  towerData: {fileID: 11400000, guid: 81e233df9721eec4e84b32de0b277cd9, type: 2}
   iconImage: {fileID: 0}
   costText: {fileID: 360368453}
   buttonComponent: {fileID: 0}
@@ -2085,73 +2085,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424212317}
   m_CullTransparentMesh: 1
---- !u!114 &427169398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7beb1b3e2274fa84783e095b1b36c83a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.TowerData
-  towerName: Mage
-  towerType: 2
-  icon: {fileID: 0}
-  prefab: {fileID: 34690925557482492, guid: adfd26f3580ec1f4fa7cf40955e4dba6, type: 3}
-  tier1:
-    cost: 120
-    damage: 15
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 5.5
-    fireRate: 1.2
-    projectileSpeed: 12
-    splashRadius: 0
-    slowFactor: 0.5
-    slowDuration: 2
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier2:
-    cost: 140
-    damage: 24
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 6.5
-    fireRate: 1.4
-    projectileSpeed: 14
-    splashRadius: 0
-    slowFactor: 0.4
-    slowDuration: 2.5
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier3:
-    cost: 180
-    damage: 40
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 7.5
-    fireRate: 1.6
-    projectileSpeed: 16
-    splashRadius: 0
-    slowFactor: 0.3
-    slowDuration: 3
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 1
-    stunChance: 0.25
 --- !u!1 &491148221
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,73 +2222,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491148221}
   m_CullTransparentMesh: 1
---- !u!114 &562147278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7beb1b3e2274fa84783e095b1b36c83a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.TowerData
-  towerName: Archer
-  towerType: 0
-  icon: {fileID: 0}
-  prefab: {fileID: 6433551680644117556, guid: 98593418532200147bc9a236c54324ce, type: 3}
-  tier1:
-    cost: 100
-    damage: 10
-    minDamage: 12
-    maxDamage: 16
-    critChance: 0.15
-    critMultiplier: 2
-    range: 6
-    fireRate: 2.5
-    projectileSpeed: 15
-    splashRadius: 0
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier2:
-    cost: 120
-    damage: 16
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 7
-    fireRate: 2.8
-    projectileSpeed: 17
-    splashRadius: 0
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier3:
-    cost: 150
-    damage: 25
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 8
-    fireRate: 3.2
-    projectileSpeed: 20
-    splashRadius: 0
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
 --- !u!1 &585374617
 GameObject:
   m_ObjectHideFlags: 0
@@ -3854,7 +3720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf7df97f0f40cf4ab3b561f9d8ab99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.UI.TowerButton
-  towerData: {fileID: 562147278}
+  towerData: {fileID: 11400000, guid: 99d749cefc8ab994db52dffd961c87e1, type: 2}
   iconImage: {fileID: 0}
   costText: {fileID: 1254381476}
   buttonComponent: {fileID: 0}
@@ -4852,7 +4718,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf7df97f0f40cf4ab3b561f9d8ab99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.UI.TowerButton
-  towerData: {fileID: 427169398}
+  towerData: {fileID: 11400000, guid: 067ad623796107c469b878098bfc166a, type: 2}
   iconImage: {fileID: 0}
   costText: {fileID: 94581844}
   buttonComponent: {fileID: 0}
@@ -6389,73 +6255,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1602917983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7beb1b3e2274fa84783e095b1b36c83a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Data.TowerData
-  towerName: Cannon
-  towerType: 1
-  icon: {fileID: 0}
-  prefab: {fileID: 1203749853548968159, guid: c479c268cb27b2148b5beec4aad3dbe5, type: 3}
-  tier1:
-    cost: 150
-    damage: 35
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 5
-    fireRate: 0.8
-    projectileSpeed: 10
-    splashRadius: 2.5
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier2:
-    cost: 180
-    damage: 55
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 5.5
-    fireRate: 0.9
-    projectileSpeed: 11
-    splashRadius: 3
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 0
-    burnDuration: 0
-    stunDuration: 0
-    stunChance: 0
-  tier3:
-    cost: 220
-    damage: 85
-    minDamage: 0
-    maxDamage: 0
-    critChance: 0
-    critMultiplier: 2
-    range: 6
-    fireRate: 1
-    projectileSpeed: 12
-    splashRadius: 3.5
-    slowFactor: 0
-    slowDuration: 0
-    burnDamagePerSecond: 10
-    burnDuration: 3
-    stunDuration: 0
-    stunChance: 0
 --- !u!1 &1615665391
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,11 +34,44 @@ namespace TowerDefense.Core
         private bool isSpawning = false;
         private bool isWaveActive = false;
         private int activeEnemyCount = 0;
+        private int remainingEnemyCount = 0;
 
         public int CurrentWaveIndex => currentWaveIndex;
         public float WaveTimer => waveTimer;
         public bool IsWaveActive => isWaveActive;
         public int ActiveEnemyCount => activeEnemyCount;
+        public int RemainingEnemyCount => remainingEnemyCount;
+
+        public int GetEnemyCountForWave(int waveIndex)
+        {
+            if (waveIndex <= 0) return 0;
+
+            // Check if this is a boss wave (every 5th wave)
+            if (waveIndex % 5 == 0)
+            {
+                return bossEnemyData != null ? 1 : 0;
+            }
+
+            WaveData wave;
+            if (waveIndex - 1 < preconfiguredWaves.Count)
+            {
+                wave = preconfiguredWaves[waveIndex - 1];
+            }
+            else
+            {
+                int templateIndex = (waveIndex - 1) % preconfiguredWaves.Count;
+                wave = preconfiguredWaves[templateIndex];
+            }
+
+            if (wave == null || wave.spawnGroups == null) return 0;
+
+            int total = 0;
+            foreach (var group in wave.spawnGroups)
+            {
+                total += group.count;
+            }
+            return total;
+        }
 
         private void Awake()
         {
@@ -81,6 +114,7 @@ namespace TowerDefense.Core
             isWaveActive = true;
             isSpawning = true;
             activeEnemyCount = 0;
+            remainingEnemyCount = GetEnemyCountForWave(currentWaveIndex);
 
             EventBus.TriggerWaveStarted(currentWaveIndex);
             StartCoroutine(SpawnWaveCoroutine());
@@ -185,6 +219,8 @@ namespace TowerDefense.Core
         public void RegisterEnemyDeath()
         {
             activeEnemyCount--;
+            remainingEnemyCount--;
+            if (remainingEnemyCount < 0) remainingEnemyCount = 0;
             CheckWaveCompletion();
         }
 
@@ -195,6 +231,7 @@ namespace TowerDefense.Core
             isWaveActive = false;
             isSpawning = false;
             activeEnemyCount = 0;
+            remainingEnemyCount = 0;
         }
 
         private void CheckWaveCompletion()
@@ -211,12 +248,25 @@ namespace TowerDefense.Core
         {
             EventBus.OnEnemyKilled += HandleEnemyKilled;
             EventBus.OnEnemyReachedBase += HandleEnemyReachedBase;
+            EventBus.OnGameRestarted += HandleGameRestarted;
         }
 
         private void OnDisable()
         {
             EventBus.OnEnemyKilled -= HandleEnemyKilled;
             EventBus.OnEnemyReachedBase -= HandleEnemyReachedBase;
+            EventBus.OnGameRestarted -= HandleGameRestarted;
+        }
+
+        private void HandleGameRestarted()
+        {
+            StopAllCoroutines();
+            currentWaveIndex = 0;
+            waveTimer = 5f; // First wave starts in 5 seconds
+            isSpawning = false;
+            isWaveActive = false;
+            activeEnemyCount = 0;
+            remainingEnemyCount = 0;
         }
 
         private void HandleEnemyKilled(int reward)
