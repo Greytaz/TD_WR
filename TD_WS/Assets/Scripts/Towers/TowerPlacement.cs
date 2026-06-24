@@ -170,7 +170,7 @@ namespace TowerDefense.Towers
         {
             if (pendingTowerData == null) return;
 
-            int cost = pendingTowerData.tier1.cost;
+            int cost = RunPerkManager.GetBuildCost(pendingTowerData);
 
             if (GridManager.Instance.IsCellBuildable(x, z))
             {

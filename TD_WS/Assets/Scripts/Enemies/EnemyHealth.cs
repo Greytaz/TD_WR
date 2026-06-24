@@ -3,6 +3,7 @@ using UnityEngine;
 using TowerDefense.Data;
 using TowerDefense.Effects;
 using TowerDefense.Utils;
+using TowerDefense.Core;
 
 namespace TowerDefense.Enemies
 {
@@ -15,6 +16,8 @@ namespace TowerDefense.Enemies
         private float currentHealth;
         private float maxHealth;
         private bool isDead = false;
+
+        public bool IsSlowed => activeEffects.Exists(e => e.type == StatusEffectType.Slow);
 
         private List<ActiveStatusEffect> activeEffects = new List<ActiveStatusEffect>();
         private EnemyMovement enemyMovement;
@@ -78,6 +81,28 @@ namespace TowerDefense.Enemies
             }
 
             float finalDamage = damage * multiplier;
+
+            // Apply Run Perk multipliers dynamically
+            if (RunPerkManager.Instance != null)
+            {
+                // Boss Damage (+15% damage to bosses)
+                if (enemyData != null && enemyData.enemyType == EnemyType.Boss && RunPerkManager.Instance.IsPerkActive("boss_hunter"))
+                {
+                    finalDamage *= 1.15f;
+                }
+
+                // Cannon Damage to slow/boss enemies (+20% damage)
+                if (type == DamageType.Explosive && RunPerkManager.Instance.IsPerkActive("siege_engineering"))
+                {
+                    bool isSlowed = IsSlowed;
+                    bool isBoss = enemyData != null && enemyData.enemyType == EnemyType.Boss;
+                    if (isSlowed || isBoss)
+                    {
+                        finalDamage *= 1.20f;
+                    }
+                }
+            }
+
             currentHealth -= finalDamage;
             UpdateHealthBar();
 
@@ -248,6 +273,7 @@ namespace TowerDefense.Enemies
 
             // Trigger reward
             EventBus.TriggerEnemyKilled(enemyData.goldReward);
+            EventBus.TriggerEnemyKilledData(enemyData);
 
             // Play death VFX
             if (ParticleManager.Instance != null)

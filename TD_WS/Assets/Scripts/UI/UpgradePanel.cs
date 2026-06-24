@@ -223,7 +223,7 @@ namespace TowerDefense.UI
             else
             {
                 int nextTier = currentTier + 1;
-                int cost = (tiers != null && nextTier - 1 < tiers.Length) ? tiers[nextTier - 1].cost : 0;
+                int cost = (tiers != null && nextTier - 1 < tiers.Length) ? RunPerkManager.GetUpgradeCost(tiers[nextTier - 1].cost) : 0;
 
                 string partName = "";
                 if (partType == TowerPartType.Base) partName = "Base";

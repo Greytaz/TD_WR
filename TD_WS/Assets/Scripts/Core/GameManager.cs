@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using TowerDefense.Utils;
 using TowerDefense.Effects;
 
@@ -95,6 +96,12 @@ namespace TowerDefense.Core
                 enemy.gameObject.SetActive(false);
             }
 
+            // Reset current run perks
+            if (RunPerkManager.Instance != null)
+            {
+                RunPerkManager.Instance.ResetRunPerks();
+            }
+
             currentHP = startHP;
             currentGold = startGold;
             currentState = GameState.Playing;
@@ -135,6 +142,7 @@ namespace TowerDefense.Core
         private void HandleWaveStarted(int waveIndex)
         {
             currentWaveIndex = waveIndex;
+            SaveSystem.SaveCurrentRunWave(waveIndex);
         }
 
         private void HandleWaveCompleted(int waveIndex)
@@ -148,6 +156,49 @@ namespace TowerDefense.Core
             int waveClearBonus = 50 + (waveIndex * 10);
             
             AddGold(waveClearBonus + interest);
+
+            // Trigger active run autosave (saves HP, Gold, Wave, Perks, and Towers)
+            AutoSaveActiveRun();
+        }
+
+        private void AutoSaveActiveRun()
+        {
+            if (currentState != GameState.Playing && currentState != GameState.Paused) return;
+
+            SaveSystem.ActiveRunSaveData data = new SaveSystem.ActiveRunSaveData();
+            data.gold = currentGold;
+            data.hp = currentHP;
+            data.wave = currentWaveIndex;
+
+            if (RunPerkManager.Instance != null)
+            {
+                data.activePerks = new List<string>(RunPerkManager.Instance.ActiveRunPerks);
+            }
+
+            // Save all towers from the grid
+            if (GridManager.Instance != null)
+            {
+                for (int x = 0; x < GridManager.Instance.gridWidth; x++)
+                {
+                    for (int z = 0; z < GridManager.Instance.gridHeight; z++)
+                    {
+                        var tower = GridManager.Instance.GetTowerAtCell(x, z);
+                        if (tower != null)
+                        {
+                            SaveSystem.TowerSaveEntry entry = new SaveSystem.TowerSaveEntry();
+                            entry.x = x;
+                            entry.z = z;
+                            entry.towerType = tower.Data.towerType.ToString();
+                            entry.baseTier = tower.BaseTier;
+                            entry.bodyTier = tower.BodyTier;
+                            entry.weaponTier = tower.WeaponTier;
+                            data.towers.Add(entry);
+                        }
+                    }
+                }
+            }
+
+            SaveSystem.SaveActiveRun(data);
         }
 
         public void AddGold(int amount)
@@ -190,12 +241,17 @@ namespace TowerDefense.Core
 
             // Save High Score
             SaveSystem.SaveBestWave(currentWaveIndex);
+            SaveSystem.SaveCurrentRunWave(0); // Clear current run wave because the run is over
+            SaveSystem.ClearActiveRun(); // Clear active run autosave because the run is over
 
             EventBus.TriggerGameOver(currentWaveIndex);
         }
 
         public void GoToMainMenu()
         {
+            // AutoSave before returning to main menu (ensures changes in preparation phase or pause menu are saved)
+            AutoSaveActiveRun();
+
             currentState = GameState.MainMenu;
             Time.timeScale = 0f;
         }
@@ -209,19 +265,110 @@ namespace TowerDefense.Core
         public void StartNewGame()
         {
             ResetGame();
+            SaveSystem.SaveCurrentRunWave(1);
+            SaveSystem.ClearActiveRun(); // Clear previous active run save
             if (WaveManager.Instance != null)
             {
                 WaveManager.Instance.SetWaveIndex(0);
             }
         }
 
+        private Data.TowerData GetTowerDataByType(string typeStr)
+        {
+            var buttons = Object.FindObjectsByType<UI.TowerButton>(FindObjectsSortMode.None);
+            foreach (var btn in buttons)
+            {
+                if (btn.towerData != null && btn.towerData.towerType.ToString() == typeStr)
+                {
+                    return btn.towerData;
+                }
+            }
+            return null;
+        }
+
         public void ContinueGame()
         {
-            int bestWave = SaveSystem.LoadBestWave();
+            if (SaveSystem.HasActiveRun())
+            {
+                var data = SaveSystem.LoadActiveRun();
+                if (data != null)
+                {
+                    currentHP = data.hp;
+                    currentGold = data.gold;
+                    currentWaveIndex = data.wave;
+
+                    currentState = GameState.Playing;
+                    targetTimeScale = 1f;
+                    Time.timeScale = 1f;
+
+                    EventBus.TriggerBaseHPChanged(currentHP);
+                    EventBus.TriggerGoldChanged(currentGold);
+
+                    // Rebuild active perks state
+                    if (RunPerkManager.Instance != null)
+                    {
+                        RunPerkManager.Instance.LoadActiveRunPerks(data.activePerks);
+                    }
+
+                    // Rebuild grid towers
+                    if (GridManager.Instance != null)
+                    {
+                        GridManager.Instance.ClearGrid();
+                        foreach (var tSave in data.towers)
+                        {
+                            Data.TowerData tData = GetTowerDataByType(tSave.towerType);
+                            if (tData != null)
+                            {
+                                GameObject prefabToSpawn = tData.prefab;
+                                if (prefabToSpawn == null)
+                                {
+                                    // Fallback to loading the standard tower prefab from assets if not assigned in tests
+                                    #if UNITY_EDITOR
+                                    prefabToSpawn = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Towers/{tSave.towerType}Tower.prefab");
+                                    #endif
+                                }
+
+                                if (prefabToSpawn != null)
+                                {
+                                    GameObject towerObj = Instantiate(prefabToSpawn);
+                                    Towers.TowerBase towerInstance = towerObj.GetComponent<Towers.TowerBase>();
+                                    towerInstance.Initialize(tData);
+                                    towerInstance.SetBaseTier(tSave.baseTier);
+                                    towerInstance.SetBodyTier(tSave.bodyTier);
+                                    towerInstance.SetWeaponTier(tSave.weaponTier);
+
+                                    GridManager.Instance.PlaceTower(tSave.x, tSave.z, towerInstance);
+                                }
+                                else
+                                {
+                                    Debug.LogError($"[Autosave] Prefab for {tSave.towerType} is null, cannot restore tower on grid!");
+                                }
+                            }
+                        }
+                    }
+
+                    if (WaveManager.Instance != null)
+                    {
+                        // WaveManager's currentWaveIndex will be incremented when the wave starts,
+                        // so we set it to (currentWaveIndex - 1) so that it starts at currentWaveIndex.
+                        WaveManager.Instance.SetWaveIndex(Mathf.Max(0, currentWaveIndex - 1));
+                    }
+
+                    EventBus.TriggerWaveStarted(currentWaveIndex);
+                    return;
+                }
+            }
+
+            // Fallback old behavior
+            int savedWave = SaveSystem.LoadCurrentRunWave();
+            if (savedWave <= 0)
+            {
+                savedWave = 1;
+            }
             currentHP = startHP;
             
             // Give them starting gold plus 120 gold for each wave completed, so they can rebuild defenses
-            currentGold = startGold + Mathf.Max(0, (bestWave - 1) * 120);
+            currentGold = startGold + Mathf.Max(0, (savedWave - 1) * 120);
             currentState = GameState.Playing;
             targetTimeScale = 1f;
             Time.timeScale = 1f;
@@ -232,12 +379,12 @@ namespace TowerDefense.Core
             if (WaveManager.Instance != null)
             {
                 // WaveManager's currentWaveIndex will be incremented when the wave starts,
-                // so we set it to (bestWave - 1) so that it starts at bestWave.
-                WaveManager.Instance.SetWaveIndex(Mathf.Max(0, bestWave - 1));
+                // so we set it to (savedWave - 1) so that it starts at savedWave.
+                WaveManager.Instance.SetWaveIndex(Mathf.Max(0, savedWave - 1));
             }
 
-            currentWaveIndex = bestWave;
-            EventBus.TriggerWaveStarted(bestWave);
+            currentWaveIndex = savedWave;
+            EventBus.TriggerWaveStarted(savedWave);
         }
     }
 }

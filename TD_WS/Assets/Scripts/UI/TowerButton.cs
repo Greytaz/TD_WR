@@ -63,7 +63,7 @@ namespace TowerDefense.UI
         {
             if (towerData == null) return;
 
-            bool canAfford = currentGold >= towerData.tier1.cost;
+            bool canAfford = currentGold >= RunPerkManager.GetBuildCost(towerData);
 
             if (buttonComponent != null)
             {
@@ -87,7 +87,7 @@ namespace TowerDefense.UI
 
             if (costText != null)
             {
-                costText.text = $"{towerData.tier1.cost}G";
+                costText.text = $"{RunPerkManager.GetBuildCost(towerData)}G";
             }
         }
 

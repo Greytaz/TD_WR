@@ -42,21 +42,21 @@ namespace TowerDefense.Towers
                 currentTier = tower.BaseTier;
                 if (currentTier >= 3) return false;
                 nextTier = currentTier + 1;
-                cost = tower.Data.baseTiers[nextTier - 1].cost;
+                cost = RunPerkManager.GetUpgradeCost(tower.Data.baseTiers[nextTier - 1].cost);
             }
             else if (partType == TowerPartType.Body)
             {
                 currentTier = tower.BodyTier;
                 if (currentTier >= 3) return false;
                 nextTier = currentTier + 1;
-                cost = tower.Data.bodyTiers[nextTier - 1].cost;
+                cost = RunPerkManager.GetUpgradeCost(tower.Data.bodyTiers[nextTier - 1].cost);
             }
             else if (partType == TowerPartType.Weapon)
             {
                 currentTier = tower.WeaponTier;
                 if (currentTier >= 3) return false;
                 nextTier = currentTier + 1;
-                cost = tower.Data.weaponTiers[nextTier - 1].cost;
+                cost = RunPerkManager.GetUpgradeCost(tower.Data.weaponTiers[nextTier - 1].cost);
             }
 
             if (GameManager.Instance.SpendGold(cost))

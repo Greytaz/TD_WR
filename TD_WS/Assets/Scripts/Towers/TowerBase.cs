@@ -171,6 +171,13 @@ namespace TowerDefense.Towers
             }
 
             stats.critChance = Mathf.Clamp01(stats.critChance);
+
+            // Apply Run Perks to Tower stats
+            if (RunPerkManager.Instance != null)
+            {
+                RunPerkManager.Instance.ApplyPerkStats(towerData.towerType, stats);
+            }
+
             return stats;
         }
 

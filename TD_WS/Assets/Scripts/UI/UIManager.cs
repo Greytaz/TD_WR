@@ -41,6 +41,9 @@ namespace TowerDefense.UI
         public Button continueButton;
         public TextMeshProUGUI bestWaveText;
 
+        [Header("Player Progress HUD")]
+        public TextMeshProUGUI hudProgressText;
+
         private void Awake()
         {
             if (Instance == null)
@@ -79,11 +82,12 @@ namespace TowerDefense.UI
                 mainMenuPanel.SetActive(true);
                 
                 int bestWave = SaveSystem.LoadBestWave();
+                int currentRunWave = SaveSystem.LoadCurrentRunWave();
                 
-                // Set continue button interactable if a save exists
+                // Set continue button interactable if a current run wave save exists
                 if (continueButton != null)
                 {
-                    continueButton.interactable = (bestWave > 0);
+                    continueButton.interactable = (currentRunWave > 0);
                 }
 
                 // Show best wave achieved
@@ -100,6 +104,20 @@ namespace TowerDefense.UI
                     }
                 }
             }
+
+            UpdateProgressHUD();
+        }
+
+        private void UpdateProgressHUD()
+        {
+            if (hudProgressText != null && PlayerProgressManager.Instance != null)
+            {
+                int lvl = PlayerProgressManager.Instance.Level;
+                int xp = PlayerProgressManager.Instance.CurrentXP;
+                int reqXp = PlayerProgressManager.Instance.GetXPRequiredForNextLevel();
+                int tokens = PlayerProgressManager.Instance.TechTokens;
+                hudProgressText.text = $"Lv: {lvl} ({xp}/{reqXp} XP) | Tokens: {tokens}";
+            }
         }
 
         private void OnEnable()
@@ -110,6 +128,7 @@ namespace TowerDefense.UI
             EventBus.OnGameOver += ShowGameOverScreen;
             EventBus.OnGameRestarted += HideAllOverlays;
             EventBus.OnGameRestarted += UpdateSpeedHUD;
+            EventBus.OnPlayerProgressChanged += UpdateProgressHUD;
         }
 
         private void OnDisable()
@@ -120,6 +139,7 @@ namespace TowerDefense.UI
             EventBus.OnGameOver -= ShowGameOverScreen;
             EventBus.OnGameRestarted -= HideAllOverlays;
             EventBus.OnGameRestarted -= UpdateSpeedHUD;
+            EventBus.OnPlayerProgressChanged -= UpdateProgressHUD;
         }
 
         private void Update()
@@ -245,7 +265,7 @@ namespace TowerDefense.UI
                 int bestWave = SaveSystem.LoadBestWave();
                 if (continueButton != null)
                 {
-                    continueButton.interactable = (bestWave > 0);
+                    continueButton.interactable = SaveSystem.HasActiveRun();
                 }
                 if (bestWaveText != null)
                 {

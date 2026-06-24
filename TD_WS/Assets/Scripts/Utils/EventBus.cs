@@ -16,7 +16,11 @@ namespace TowerDefense.Utils
         
         // Enemy events
         public static Action<int> OnEnemyKilled; // gold reward
+        public static Action<Data.EnemyData> OnEnemyKilledData; // enemy data
         public static Action OnEnemyReachedBase;
+
+        // Player Progress events
+        public static Action OnPlayerProgressChanged;
 
         // Tower events
         public static Action<Towers.TowerBase> OnTowerSelected;
@@ -33,7 +37,9 @@ namespace TowerDefense.Utils
         public static void TriggerWaveStarted(int wave) => OnWaveStarted?.Invoke(wave);
         public static void TriggerWaveCompleted(int wave) => OnWaveCompleted?.Invoke(wave);
         public static void TriggerEnemyKilled(int gold) => OnEnemyKilled?.Invoke(gold);
+        public static void TriggerEnemyKilledData(Data.EnemyData data) => OnEnemyKilledData?.Invoke(data);
         public static void TriggerEnemyReachedBase() => OnEnemyReachedBase?.Invoke();
+        public static void TriggerPlayerProgressChanged() => OnPlayerProgressChanged?.Invoke();
         public static void TriggerTowerSelected(Towers.TowerBase tower) => OnTowerSelected?.Invoke(tower);
         public static void TriggerTowerDeselected() => OnTowerDeselected?.Invoke();
         public static void TriggerTowerPlaced() => OnTowerPlaced?.Invoke();
