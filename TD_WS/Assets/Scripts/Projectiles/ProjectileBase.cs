@@ -3,6 +3,7 @@ using TowerDefense.Enemies;
 using TowerDefense.Data;
 using TowerDefense.Effects;
 using TowerDefense.Utils;
+using TowerDefense.Towers;
 
 namespace TowerDefense.Projectiles
 {
@@ -14,6 +15,12 @@ namespace TowerDefense.Projectiles
         protected TowerTierData stats;
         protected Vector3 lastTargetPos;
         protected bool isInitialized = false;
+        protected TowerBase sourceTower;
+
+        public void SetSourceTower(TowerBase source)
+        {
+            sourceTower = source;
+        }
 
         public virtual void Initialize(EnemyHealth targetEnemy, TowerTierData towerStats)
         {
@@ -63,7 +70,7 @@ namespace TowerDefense.Projectiles
             {
                 // General default single target hit (e.g. Archer physical arrow)
                 float dmg = stats.GetRandomDamage(out bool isCrit);
-                target.TakeDamage(dmg, DamageType.Physical, isCrit);
+                target.TakeDamage(dmg, DamageType.Physical, isCrit, sourceTower);
             }
         }
     }

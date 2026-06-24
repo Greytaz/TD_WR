@@ -27,6 +27,7 @@ namespace TowerDefense.Utils
         public static Action<Towers.TowerBase> OnTowerSelected;
         public static Action OnTowerDeselected;
         public static Action OnTowerPlaced;
+        public static Action<Towers.TowerBase, float> OnTowerDamageDealt;
 
         // Game State events
         public static Action<int> OnGameOver; // waves survived
@@ -45,6 +46,7 @@ namespace TowerDefense.Utils
         public static void TriggerTowerSelected(Towers.TowerBase tower) => OnTowerSelected?.Invoke(tower);
         public static void TriggerTowerDeselected() => OnTowerDeselected?.Invoke();
         public static void TriggerTowerPlaced() => OnTowerPlaced?.Invoke();
+        public static void TriggerTowerDamageDealt(Towers.TowerBase tower, float damage) => OnTowerDamageDealt?.Invoke(tower, damage);
         public static void TriggerGameOver(int waves) => OnGameOver?.Invoke(waves);
         public static void TriggerGameRestarted() => OnGameRestarted?.Invoke();
     }

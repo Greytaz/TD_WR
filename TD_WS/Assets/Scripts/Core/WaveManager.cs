@@ -224,14 +224,20 @@ namespace TowerDefense.Core
             CheckWaveCompletion();
         }
 
-        public void SetWaveIndex(int index)
+        public void StopSpawning()
         {
-            currentWaveIndex = index;
-            waveTimer = 5f; // give them 5 seconds to build defenses on resume
-            isWaveActive = false;
+            StopAllCoroutines();
             isSpawning = false;
+            isWaveActive = false;
             activeEnemyCount = 0;
             remainingEnemyCount = 0;
+        }
+
+        public void SetWaveIndex(int index)
+        {
+            StopSpawning();
+            currentWaveIndex = index;
+            waveTimer = 5f; // give them 5 seconds to build defenses on resume
         }
 
         private void CheckWaveCompletion()

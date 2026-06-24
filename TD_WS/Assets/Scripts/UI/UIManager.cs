@@ -176,6 +176,8 @@ namespace TowerDefense.UI
             // Handle Escape key to pause/unpause
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
+                if (PerkChoiceUI.Instance != null && PerkChoiceUI.Instance.IsActive) return;
+
                 if (GameManager.Instance != null && 
                     (GameManager.Instance.CurrentState == GameState.Playing || GameManager.Instance.CurrentState == GameState.Paused))
                 {
@@ -186,6 +188,8 @@ namespace TowerDefense.UI
 
         private void OnApplicationFocus(bool hasFocus)
         {
+            if (PerkChoiceUI.Instance != null && PerkChoiceUI.Instance.IsActive) return;
+
             // Pause the game if we lose focus and are currently playing
             if (!hasFocus && GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Playing)
             {
@@ -210,6 +214,8 @@ namespace TowerDefense.UI
 
         public void TogglePauseMenu()
         {
+            if (PerkChoiceUI.Instance != null && PerkChoiceUI.Instance.IsActive) return;
+
             GameManager.Instance.TogglePause();
             if (pausePanel != null)
             {

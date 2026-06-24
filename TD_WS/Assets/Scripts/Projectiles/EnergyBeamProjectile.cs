@@ -108,7 +108,7 @@ namespace TowerDefense.Projectiles
             if (target != null && target.gameObject.activeInHierarchy)
             {
                 float dmg = stats.GetRandomDamage(out bool isCrit);
-                target.TakeDamage(dmg, DamageType.Elemental, isCrit);
+                target.TakeDamage(dmg, DamageType.Elemental, isCrit, sourceTower);
 
                 // Apply Slow
                 if (stats.slowFactor < 1f && stats.slowDuration > 0f)

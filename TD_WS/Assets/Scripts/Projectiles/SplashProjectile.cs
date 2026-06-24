@@ -68,7 +68,7 @@ namespace TowerDefense.Projectiles
                 EnemyHealth enemy = col.GetComponent<EnemyHealth>();
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    enemy.TakeDamage(dmg, DamageType.Explosive, isCrit);
+                    enemy.TakeDamage(dmg, DamageType.Explosive, isCrit, sourceTower);
 
                     // Cannon upgrade slow or burn (DOT)
                     if (stats.burnDamagePerSecond > 0f && stats.burnDuration > 0f)

@@ -592,6 +592,7 @@ namespace TowerDefense.Towers
                 if (projectile != null)
                 {
                     projectile.Initialize(currentTarget, currentStats);
+                    projectile.SetSourceTower(this);
                 }
             }
 

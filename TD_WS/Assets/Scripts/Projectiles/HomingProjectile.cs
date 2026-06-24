@@ -38,7 +38,7 @@ namespace TowerDefense.Projectiles
             {
                 DamageType dmgType = isElemental ? DamageType.Elemental : DamageType.Physical;
                 float dmg = stats.GetRandomDamage(out bool isCrit);
-                target.TakeDamage(dmg, dmgType, isCrit);
+                target.TakeDamage(dmg, dmgType, isCrit, sourceTower);
 
                 // Apply Slow
                 if (stats.slowFactor < 1f && stats.slowDuration > 0f)

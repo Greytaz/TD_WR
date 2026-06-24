@@ -10,6 +10,8 @@ namespace TowerDefense.UI
     {
         public static PerkChoiceUI Instance { get; private set; }
 
+        public bool IsActive => panelObj != null && panelObj.activeSelf;
+
         private GameObject panelObj;
         private List<PerkData> currentOptions;
 

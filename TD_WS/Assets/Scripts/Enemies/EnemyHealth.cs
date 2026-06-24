@@ -62,7 +62,7 @@ namespace TowerDefense.Enemies
             HandleStatusEffects();
         }
 
-        public void TakeDamage(float damage, DamageType type, bool isCritical = false)
+        public void TakeDamage(float damage, DamageType type, bool isCritical = false, Towers.TowerBase source = null)
         {
             if (isDead) return;
 
@@ -102,6 +102,12 @@ namespace TowerDefense.Enemies
                         finalDamage *= 1.20f;
                     }
                 }
+            }
+
+            float actualDamageDealt = Mathf.Min(finalDamage, currentHealth);
+            if (source != null && actualDamageDealt > 0f)
+            {
+                EventBus.TriggerTowerDamageDealt(source, actualDamageDealt);
             }
 
             currentHealth -= finalDamage;
