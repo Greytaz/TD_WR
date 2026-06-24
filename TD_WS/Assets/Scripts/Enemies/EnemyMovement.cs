@@ -80,9 +80,22 @@ namespace TowerDefense.Enemies
             isStunned = stunned;
         }
 
+        public float GetProgressAlongPath()
+        {
+            if (waypoints == null || waypoints.Count == 0) return 0f;
+            
+            float distToNext = 0f;
+            if (currentWaypointIndex < waypoints.Count)
+            {
+                distToNext = Vector3.Distance(transform.position, waypoints[currentWaypointIndex]);
+            }
+            return currentWaypointIndex * 1000f - distToNext;
+        }
+
         private void ReachBase()
         {
             // Reached player base! Trigger base damage event
+            EventBus.TriggerEnemyReachedBaseData(enemyData);
             EventBus.TriggerEnemyReachedBase();
 
             // Recycle enemy to pool

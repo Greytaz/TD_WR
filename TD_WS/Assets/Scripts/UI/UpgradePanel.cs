@@ -24,6 +24,8 @@ namespace TowerDefense.UI
 
         [Header("Priority Selection")]
         public TMP_Dropdown priorityDropdown;
+        public Button priorityButton;
+        public TextMeshProUGUI priorityButtonText;
 
         private TowerBase selectedTower;
 
@@ -69,18 +71,46 @@ namespace TowerDefense.UI
 
             if (sellButton != null)
             {
-                sellButton.onClick.AddListener(OnSellClicked);
+                // Add the HoldToSellButton component
+                var holdToSell = sellButton.gameObject.GetComponent<HoldToSellButton>();
+                if (holdToSell == null)
+                {
+                    holdToSell = sellButton.gameObject.AddComponent<HoldToSellButton>();
+                }
                 SetAnchor(sellButton.GetComponent<RectTransform>(), 0.24f);
             }
 
-            if (priorityDropdown != null)
+            // Convert PriorityDropdown GameObject into a button cycle dynamically
+            if (priorityButton == null && priorityDropdown != null)
             {
-                priorityDropdown.onValueChanged.AddListener(OnPriorityChanged);
-                SetAnchor(priorityDropdown.GetComponent<RectTransform>(), 0.14f);
+                GameObject dropdownObj = priorityDropdown.gameObject;
+                
+                // Destroy TMP_Dropdown first to prevent Selectable component conflict
+                var dropdownComp = dropdownObj.GetComponent<TMP_Dropdown>();
+                if (dropdownComp != null)
+                {
+                    DestroyImmediate(dropdownComp);
+                }
 
-                priorityDropdown.ClearOptions();
-                var options = new System.Collections.Generic.List<string> { "First", "Last", "Strongest", "Weakest" };
-                priorityDropdown.AddOptions(options);
+                // Get or Add Button
+                priorityButton = dropdownObj.GetComponent<Button>();
+                if (priorityButton == null)
+                {
+                    priorityButton = dropdownObj.AddComponent<Button>();
+                }
+
+                // Find the child label
+                Transform labelTrans = dropdownObj.transform.Find("Label");
+                if (labelTrans != null)
+                {
+                    priorityButtonText = labelTrans.GetComponent<TextMeshProUGUI>();
+                }
+            }
+
+            if (priorityButton != null)
+            {
+                priorityButton.onClick.AddListener(OnPriorityButtonClicked);
+                SetAnchor(priorityButton.GetComponent<RectTransform>(), 0.14f);
             }
 
             HidePanel();
@@ -154,7 +184,7 @@ namespace TowerDefense.UI
                 {
                     damageText += $" ({stats.critChance * 100f:F0}% Crit)";
                 }
-                towerStatsText.text = $"Dmg: {damageText}\nRange: {stats.range}\nSpd: {stats.fireRate:F1}/s\n\n" +
+                towerStatsText.text = $"Damage: {damageText}\nRange: {stats.range}\nAttack Speed: {stats.fireRate:F1}/s\n\n" +
                                      $"[Base T{selectedTower.BaseTier}]  [Body T{selectedTower.BodyTier}]  [Wpn T{selectedTower.WeaponTier}]";
             }
 
@@ -176,12 +206,46 @@ namespace TowerDefense.UI
 
             int refund = Mathf.FloorToInt(totalSpent * 0.70f);
 
-            if (sellRefundText != null) sellRefundText.text = $"Sell: +{refund}G";
-
-            // Priority Dropdown Setup
-            if (priorityDropdown != null)
+            var holdToSellBtn = sellButton != null ? sellButton.GetComponent<HoldToSellButton>() : null;
+            if (holdToSellBtn != null)
             {
-                priorityDropdown.SetValueWithoutNotify((int)selectedTower.Priority);
+                holdToSellBtn.Setup(refund, () => {
+                    if (selectedTower != null && TowerUpgrade.Instance != null)
+                    {
+                        TowerUpgrade.Instance.SellTower(selectedTower);
+                    }
+                });
+            }
+            else if (sellRefundText != null)
+            {
+                sellRefundText.text = $"Sell: +🪙 {refund}";
+            }
+
+            // Priority Button Setup
+            UpdatePriorityButtonText();
+        }
+
+        private void UpdatePriorityButtonText()
+        {
+            if (priorityButtonText != null && selectedTower != null)
+            {
+                string modeStr = "First";
+                switch (selectedTower.Priority)
+                {
+                    case TargetPriority.First:
+                        modeStr = "First";
+                        break;
+                    case TargetPriority.Weakest:
+                        modeStr = "Low HP";
+                        break;
+                    case TargetPriority.Strongest:
+                        modeStr = "Heavy";
+                        break;
+                    default:
+                        modeStr = selectedTower.Priority.ToString();
+                        break;
+                }
+                priorityButtonText.text = $"Target: {modeStr}";
             }
         }
 
@@ -223,7 +287,7 @@ namespace TowerDefense.UI
             else
             {
                 int nextTier = currentTier + 1;
-                int cost = (tiers != null && nextTier - 1 < tiers.Length) ? RunPerkManager.GetUpgradeCost(tiers[nextTier - 1].cost) : 0;
+                int cost = (tiers != null && nextTier - 1 < tiers.Length && tiers[nextTier - 1] != null) ? RunPerkManager.GetUpgradeCost(tiers[nextTier - 1].cost) : 0;
 
                 string partName = "";
                 if (partType == TowerPartType.Base) partName = "Base";
@@ -281,20 +345,27 @@ namespace TowerDefense.UI
             }
         }
 
-        private void OnSellClicked()
+        private void OnPriorityButtonClicked()
         {
-            if (selectedTower != null && TowerUpgrade.Instance != null)
-            {
-                TowerUpgrade.Instance.SellTower(selectedTower);
-            }
-        }
+            if (selectedTower == null) return;
 
-        private void OnPriorityChanged(int value)
-        {
-            if (selectedTower != null)
+            TargetPriority nextPriority;
+            switch (selectedTower.Priority)
             {
-                selectedTower.SetPriority((TargetPriority)value);
+                case TargetPriority.First:
+                    nextPriority = TargetPriority.Weakest;
+                    break;
+                case TargetPriority.Weakest:
+                    nextPriority = TargetPriority.Strongest;
+                    break;
+                case TargetPriority.Strongest:
+                default:
+                    nextPriority = TargetPriority.First;
+                    break;
             }
+
+            selectedTower.SetPriority(nextPriority);
+            UpdatePriorityButtonText();
         }
     }
 }

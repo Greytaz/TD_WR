@@ -185,7 +185,7 @@ namespace TowerDefense.Towers
         {
             if (towerData == null) return Color.white;
 
-            if (towerData.towerType == TowerType.Archer)
+            if (towerData.towerType == TowerType.Assault)
             {
                 switch (tier)
                 {
@@ -195,7 +195,7 @@ namespace TowerDefense.Towers
                     default: return Color.yellow;
                 }
             }
-            else if (towerData.towerType == TowerType.Mage)
+            else if (towerData.towerType == TowerType.Energy)
             {
                 switch (tier)
                 {
@@ -205,7 +205,7 @@ namespace TowerDefense.Towers
                     default: return new Color(0.5f, 0f, 0.5f);
                 }
             }
-            else if (towerData.towerType == TowerType.Cannon)
+            else if (towerData.towerType == TowerType.Command)
             {
                 switch (tier)
                 {
@@ -447,7 +447,7 @@ namespace TowerDefense.Towers
             foreach (var col in colliders)
             {
                 EnemyHealth enemy = col.GetComponent<EnemyHealth>();
-                if (enemy != null && enemy.enabled)
+                if (enemy != null && enemy.enabled && !enemy.IsDead)
                 {
                     targetsInRange.Add(enemy);
                 }
@@ -463,7 +463,7 @@ namespace TowerDefense.Towers
             }
 
             // Remove any dead targets
-            targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
+            targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy || t.IsDead);
 
             if (targetsInRange.Count == 0)
             {
@@ -493,24 +493,19 @@ namespace TowerDefense.Towers
         private EnemyHealth GetFirstTarget()
         {
             EnemyHealth best = null;
-            float maxDistance = -1f;
+            float maxProgress = -999999f;
 
             foreach (var enemy in targetsInRange)
             {
+                if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+                
                 EnemyMovement move = enemy.GetComponent<EnemyMovement>();
                 if (move != null)
                 {
-                    // A simple approximation: check waypoint index or distance to next waypoint
-                    // Let's implement a clean way: we can just check distance to the base waypoint.
-                    // The lower the distance remaining, the more advanced the enemy is.
-                    // Or we can query current waypoint index. Let's make an approximation:
-                    // Since enemies move along predefined waypoints, we can measure how close they are to the final waypoint.
-                    // But to be precise, let's look at the remaining distance along waypoints.
-                    // We can also approximate by checking how far they are from the start point.
-                    float distFromStart = Vector3.Distance(enemy.transform.position, GridManager.Instance.GetPathWaypoints()[0]);
-                    if (distFromStart > maxDistance)
+                    float progress = move.GetProgressAlongPath();
+                    if (progress > maxProgress)
                     {
-                        maxDistance = distFromStart;
+                        maxProgress = progress;
                         best = enemy;
                     }
                 }
@@ -521,15 +516,21 @@ namespace TowerDefense.Towers
         private EnemyHealth GetLastTarget()
         {
             EnemyHealth best = null;
-            float minDistance = float.MaxValue;
+            float minProgress = 999999f;
 
             foreach (var enemy in targetsInRange)
             {
-                float distFromStart = Vector3.Distance(enemy.transform.position, GridManager.Instance.GetPathWaypoints()[0]);
-                if (distFromStart < minDistance)
+                if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
+                EnemyMovement move = enemy.GetComponent<EnemyMovement>();
+                if (move != null)
                 {
-                    minDistance = distFromStart;
-                    best = enemy;
+                    float progress = move.GetProgressAlongPath();
+                    if (progress < minProgress)
+                    {
+                        minProgress = progress;
+                        best = enemy;
+                    }
                 }
             }
             return best ?? targetsInRange[0];
@@ -542,6 +543,8 @@ namespace TowerDefense.Towers
 
             foreach (var enemy in targetsInRange)
             {
+                if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
                 float currentHp = enemy.GetCurrentHealth();
                 if (currentHp > maxHp)
                 {
@@ -559,6 +562,8 @@ namespace TowerDefense.Towers
 
             foreach (var enemy in targetsInRange)
             {
+                if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
                 float currentHp = enemy.GetCurrentHealth();
                 if (currentHp < minHp)
                 {
@@ -590,8 +595,8 @@ namespace TowerDefense.Towers
                 }
             }
 
-            // Screen shake on cannon fire
-            if (towerData.towerType == TowerType.Cannon && ScreenShake.Instance != null)
+            // Screen shake on command fire
+            if (towerData.towerType == TowerType.Command && ScreenShake.Instance != null)
             {
                 ScreenShake.Instance.Shake(0.15f, 0.05f);
             }

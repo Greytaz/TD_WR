@@ -18,6 +18,7 @@ namespace TowerDefense.Enemies
         private bool isDead = false;
 
         public bool IsSlowed => activeEffects.Exists(e => e.type == StatusEffectType.Slow);
+        public bool IsDead => isDead;
 
         private List<ActiveStatusEffect> activeEffects = new List<ActiveStatusEffect>();
         private EnemyMovement enemyMovement;
@@ -272,8 +273,8 @@ namespace TowerDefense.Enemies
             }
 
             // Trigger reward
-            EventBus.TriggerEnemyKilled(enemyData.goldReward);
             EventBus.TriggerEnemyKilledData(enemyData);
+            EventBus.TriggerEnemyKilled(enemyData.goldReward);
 
             // Play death VFX
             if (ParticleManager.Instance != null)

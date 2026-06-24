@@ -81,7 +81,7 @@ namespace TowerDefense.UI
             int reqXp = PlayerProgressManager.Instance.GetXPRequiredForNextLevel();
             int tokens = PlayerProgressManager.Instance.TechTokens;
 
-            progressText.text = $"Level: {lvl}\nXP: {xp} / {reqXp}\nTech Tokens: {tokens}";
+            progressText.text = $"Level: {lvl}\nXP: {xp} / {reqXp}\nTokens: {tokens}";
         }
     }
 }

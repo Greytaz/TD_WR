@@ -96,7 +96,7 @@ namespace TowerDefense.Editor
             // ARCHER
             TowerData archer = ScriptableObject.CreateInstance<TowerData>();
             archer.towerName = "Archer";
-            archer.towerType = TowerType.Archer;
+            archer.towerType = TowerType.Assault;
             archer.tier1 = new TowerTierData { cost = 100, damage = 10, range = 6f, fireRate = 2.5f, projectileSpeed = 15f };
             archer.tier2 = new TowerTierData { cost = 120, damage = 16, range = 7f, fireRate = 2.8f, projectileSpeed = 17f };
             archer.tier3 = new TowerTierData { cost = 150, damage = 25, range = 8f, fireRate = 3.2f, projectileSpeed = 20f };
@@ -107,7 +107,7 @@ namespace TowerDefense.Editor
             // CANNON
             TowerData cannon = ScriptableObject.CreateInstance<TowerData>();
             cannon.towerName = "Cannon";
-            cannon.towerType = TowerType.Cannon;
+            cannon.towerType = TowerType.Command;
             cannon.tier1 = new TowerTierData { cost = 150, damage = 35, range = 5f, fireRate = 0.8f, projectileSpeed = 10f, splashRadius = 2.5f };
             cannon.tier2 = new TowerTierData { cost = 180, damage = 55, range = 5.5f, fireRate = 0.9f, projectileSpeed = 11f, splashRadius = 3f };
             cannon.tier3 = new TowerTierData { cost = 220, damage = 85, range = 6f, fireRate = 1.0f, projectileSpeed = 12f, splashRadius = 3.5f, burnDamagePerSecond = 10f, burnDuration = 3f };
@@ -118,7 +118,7 @@ namespace TowerDefense.Editor
             // MAGE
             TowerData mage = ScriptableObject.CreateInstance<TowerData>();
             mage.towerName = "Mage";
-            mage.towerType = TowerType.Mage;
+            mage.towerType = TowerType.Energy;
             mage.tier1 = new TowerTierData { cost = 120, damage = 15, range = 5.5f, fireRate = 1.2f, projectileSpeed = 12f, slowFactor = 0.5f, slowDuration = 2f };
             mage.tier2 = new TowerTierData { cost = 140, damage = 24, range = 6.5f, fireRate = 1.4f, projectileSpeed = 14f, slowFactor = 0.4f, slowDuration = 2.5f };
             mage.tier3 = new TowerTierData { cost = 180, damage = 40, range = 7.5f, fireRate = 1.6f, projectileSpeed = 16f, slowFactor = 0.3f, slowDuration = 3f, stunDuration = 1f, stunChance = 0.25f };

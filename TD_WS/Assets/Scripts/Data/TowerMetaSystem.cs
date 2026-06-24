@@ -118,7 +118,7 @@ namespace TowerDefense.Data
                 TowerMetaState newState = new TowerMetaState { towerType = type };
                 
                 // Делаем базовые башни разблокированными по умолчанию
-                if (type == TowerType.Archer) 
+                if (type == TowerType.Assault) 
                 {
                     newState.isUnlocked = true;
                 }

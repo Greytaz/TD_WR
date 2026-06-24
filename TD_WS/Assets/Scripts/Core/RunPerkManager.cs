@@ -56,14 +56,49 @@ namespace TowerDefense.Core
             }
         }
 
+        private bool bossKilledThisWave = false;
+
         private void OnEnable()
         {
+            EventBus.OnWaveStarted += HandleWaveStarted;
             EventBus.OnWaveCompleted += HandleWaveCompleted;
+            EventBus.OnEnemyKilledData += HandleEnemyKilledData;
+            EventBus.OnEnemyReachedBaseData += HandleEnemyReachedBaseData;
         }
 
         private void OnDisable()
         {
+            EventBus.OnWaveStarted -= HandleWaveStarted;
             EventBus.OnWaveCompleted -= HandleWaveCompleted;
+            EventBus.OnEnemyKilledData -= HandleEnemyKilledData;
+            EventBus.OnEnemyReachedBaseData -= HandleEnemyReachedBaseData;
+        }
+
+        private void HandleWaveStarted(int waveIndex)
+        {
+            if (waveIndex % 5 == 0)
+            {
+                bossKilledThisWave = false;
+                Debug.Log($"[Perks] Boss wave {waveIndex} started. Resetting bossKilledThisWave to false.");
+            }
+        }
+
+        private void HandleEnemyKilledData(EnemyData enemyData)
+        {
+            if (enemyData != null && enemyData.enemyType == EnemyType.Boss)
+            {
+                bossKilledThisWave = true;
+                Debug.Log("[Perks] Boss killed! Player is eligible for the wave perk choice.");
+            }
+        }
+
+        private void HandleEnemyReachedBaseData(EnemyData enemyData)
+        {
+            if (enemyData != null && enemyData.enemyType == EnemyType.Boss)
+            {
+                bossKilledThisWave = false;
+                Debug.Log("[Perks] Boss reached base! Player is NOT eligible for the wave perk choice.");
+            }
         }
 
         private void HandleWaveCompleted(int waveIndex)
@@ -102,7 +137,14 @@ namespace TowerDefense.Core
         {
             if (completedWave % 5 == 0)
             {
-                ShowPerkChoice(completedWave);
+                if (bossKilledThisWave)
+                {
+                    ShowPerkChoice(completedWave);
+                }
+                else
+                {
+                    Debug.Log($"[Perks] Boss was NOT killed this wave ({completedWave}). Skipping perk selection.");
+                }
             }
         }
 
@@ -220,6 +262,7 @@ namespace TowerDefense.Core
         public void ResetRunPerks()
         {
             activeRunPerks.Clear();
+            bossKilledThisWave = false;
             Debug.Log("[Perks] Reset all current run perks.");
         }
 
@@ -279,7 +322,7 @@ namespace TowerDefense.Core
                 stats.fireRate *= 1.05f;
             }
 
-            if (type == TowerType.Archer)
+            if (type == TowerType.Assault)
             {
                 // reinforced_barrels (ShooterDamage: +10% damage)
                 if (IsPerkActive("reinforced_barrels"))
@@ -295,7 +338,7 @@ namespace TowerDefense.Core
                     stats.critChance += 0.10f;
                 }
             }
-            else if (type == TowerType.Mage)
+            else if (type == TowerType.Energy)
             {
                 // charged_coils (MageStunDuration: +10% stun duration)
                 if (IsPerkActive("charged_coils"))
@@ -319,7 +362,7 @@ namespace TowerDefense.Core
                     stats.fireRate *= 1.10f;
                 }
             }
-            else if (type == TowerType.Cannon)
+            else if (type == TowerType.Command)
             {
                 // heavy_shells (CannonAOEDamage: +10% Cannon damage)
                 if (IsPerkActive("heavy_shells"))
@@ -346,8 +389,8 @@ namespace TowerDefense.Core
                 pickCount = 1,
                 options = new List<PerkData>
                 {
-                    new PerkData { id = "reinforced_barrels", title = "Reinforced Barrels", description = "+10% Archer Damage", type = "ShooterDamage", value = 10, value_type = "percent" },
-                    new PerkData { id = "charged_coils", title = "Charged Coils", description = "+10% Mage Stun Duration", type = "MageStunDuration", value = 10, value_type = "percent" }
+                    new PerkData { id = "reinforced_barrels", title = "Reinforced Barrels", description = "+10% Assault Damage", type = "ShooterDamage", value = 10, value_type = "percent" },
+                    new PerkData { id = "charged_coils", title = "Charged Coils", description = "+10% Energy Stun Duration", type = "MageStunDuration", value = 10, value_type = "percent" }
                 }
             });
 
@@ -358,7 +401,7 @@ namespace TowerDefense.Core
                 pickCount = 1,
                 options = new List<PerkData>
                 {
-                    new PerkData { id = "heavy_shells", title = "Heavy Shells", description = "+10% Cannon AOE Damage", type = "CannonAOEDamage", value = 10, value_type = "percent" },
+                    new PerkData { id = "heavy_shells", title = "Heavy Shells", description = "+10% Command AOE Damage", type = "CannonAOEDamage", value = 10, value_type = "percent" },
                     new PerkData { id = "smart_targeting", title = "Smart Targeting", description = "+5% Range of all Towers", type = "TowerRange", value = 5, value_type = "percent" }
                 }
             });
@@ -383,7 +426,7 @@ namespace TowerDefense.Core
                 options = new List<PerkData>
                 {
                     new PerkData { id = "faster_reload", title = "Faster Reload", description = "+7% Attack Speed for all Towers", type = "AttackSpeed", value = 7, value_type = "percent" },
-                    new PerkData { id = "shock_amplifier", title = "Shock Amplifier", description = "+15% micro-stun chance for Mage Tower", type = "MageMiniStunChance", value = 15, value_type = "percent" }
+                    new PerkData { id = "shock_amplifier", title = "Shock Amplifier", description = "+15% micro-stun chance for Energy Tower", type = "MageMiniStunChance", value = 15, value_type = "percent" }
                 }
             });
 
@@ -394,8 +437,8 @@ namespace TowerDefense.Core
                 pickCount = 1,
                 options = new List<PerkData>
                 {
-                    new PerkData { id = "explosive_radius", title = "Explosive Radius", description = "+15% Cannon Explosion Radius", type = "CannonExplosionRadius", value = 15, value_type = "percent" },
-                    new PerkData { id = "precision_protocol", title = "Precision Protocol", description = "+10% Archer Crit Chance", type = "ShooterCritChance", value = 10, value_type = "percent" }
+                    new PerkData { id = "explosive_radius", title = "Explosive Radius", description = "+15% Command Explosion Radius", type = "CannonExplosionRadius", value = 15, value_type = "percent" },
+                    new PerkData { id = "precision_protocol", title = "Precision Protocol", description = "+10% Assault Crit Chance", type = "ShooterCritChance", value = 10, value_type = "percent" }
                 }
             });
 
@@ -430,8 +473,8 @@ namespace TowerDefense.Core
                 pickCount = 1,
                 options = new List<PerkData>
                 {
-                    new PerkData { id = "overcharged_mages", title = "Overcharged Mages", description = "+10% Mage Attack Speed", type = "MageAttackSpeed", value = 10, value_type = "percent" },
-                    new PerkData { id = "armor_piercing_rounds", title = "Armor Piercing Rounds", description = "Archer ignores 15% Armor (saved parameter)", type = "ShooterArmorPierce", value = 15, value_type = "percent" }
+                    new PerkData { id = "overcharged_mages", title = "Overcharged Mages", description = "+10% Energy Attack Speed", type = "MageAttackSpeed", value = 10, value_type = "percent" },
+                    new PerkData { id = "armor_piercing_rounds", title = "Armor Piercing Rounds", description = "Assault ignores 15% Armor (saved parameter)", type = "ShooterArmorPierce", value = 15, value_type = "percent" }
                 }
             });
 
@@ -442,7 +485,7 @@ namespace TowerDefense.Core
                 pickCount = 1,
                 options = new List<PerkData>
                 {
-                    new PerkData { id = "siege_engineering", title = "Siege Engineering", description = "+20% Cannon Damage to Slow and Boss enemies", type = "CannonDamageToSlowEnemies", value = 20, value_type = "percent" },
+                    new PerkData { id = "siege_engineering", title = "Siege Engineering", description = "+20% Command Damage to Slow and Boss enemies", type = "CannonDamageToSlowEnemies", value = 20, value_type = "percent" },
                     new PerkData { id = "tactical_economy", title = "Tactical Economy", description = "+10% wave completed Gold bonus", type = "EndWaveGoldBonus", value = 10, value_type = "percent" }
                 }
             });

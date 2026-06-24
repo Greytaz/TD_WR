@@ -76,6 +76,13 @@ namespace TowerDefense.UI
             HideAllOverlays();
             UpdateSpeedHUD();
 
+            if (GameManager.Instance != null)
+            {
+                UpdateGoldHUD(GameManager.Instance.CurrentState == GameState.MainMenu ? GameManager.Instance.startGold : GameManager.Instance.CurrentGold);
+                UpdateBaseHPHUD(GameManager.Instance.CurrentState == GameState.MainMenu ? GameManager.Instance.startHP : GameManager.Instance.CurrentHP);
+                UpdateWaveHUD(Mathf.Max(1, WaveManager.Instance != null ? WaveManager.Instance.CurrentWaveIndex : 1));
+            }
+
             // Enable MainMenuPanel on start
             if (mainMenuPanel != null)
             {
@@ -116,7 +123,7 @@ namespace TowerDefense.UI
                 int xp = PlayerProgressManager.Instance.CurrentXP;
                 int reqXp = PlayerProgressManager.Instance.GetXPRequiredForNextLevel();
                 int tokens = PlayerProgressManager.Instance.TechTokens;
-                hudProgressText.text = $"Lv: {lvl} ({xp}/{reqXp} XP) | Tokens: {tokens}";
+                hudProgressText.text = $"Level: {lvl} XP {xp}/{reqXp} Tokens: {tokens}";
             }
         }
 
@@ -162,7 +169,7 @@ namespace TowerDefense.UI
                 else
                 {
                     int incomingCount = WaveManager.Instance.GetEnemyCountForWave(WaveManager.Instance.CurrentWaveIndex + 1);
-                    enemyCountText.text = $"Enemies: {incomingCount} (Next in {WaveManager.Instance.WaveTimer:F1}s)";
+                    enemyCountText.text = $"Enemies: {incomingCount} (Next: {WaveManager.Instance.WaveTimer:F1}s)";
                 }
             }
 
@@ -188,7 +195,7 @@ namespace TowerDefense.UI
 
         private void UpdateGoldHUD(int gold)
         {
-            if (goldText != null) goldText.text = $"Gold: {gold}";
+            if (goldText != null) goldText.text = $"Gold: {gold}G";
         }
 
         private void UpdateBaseHPHUD(int hp)

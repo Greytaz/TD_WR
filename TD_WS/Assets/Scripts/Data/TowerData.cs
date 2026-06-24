@@ -4,9 +4,9 @@ namespace TowerDefense.Data
 {
     public enum TowerType
     {
-        Archer,
-        Cannon,
-        Mage
+        Assault,
+        Command,
+        Energy
     }
 
     [System.Serializable]

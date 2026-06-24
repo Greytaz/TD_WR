@@ -38,6 +38,7 @@ namespace TowerDefense.UI
 
         private void InitializeUI()
         {
+            if (!Application.isPlaying) return;
             if (panelObj != null) return;
 
             // Find main Canvas

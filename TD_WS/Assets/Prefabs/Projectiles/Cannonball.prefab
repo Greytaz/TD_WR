@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3556931356045287960}
   - component: {fileID: 5546898677064650521}
   - component: {fileID: 1486047526665516851}
-  - component: {fileID: 4182573722082447868}
+  - component: {fileID: 7335209767428630445}
   m_Layer: 0
   m_Name: Cannonball
   m_TagString: Untagged
@@ -113,7 +113,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4182573722082447868
+--- !u!114 &7335209767428630445
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,8 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7159016327480957849}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7de284ac36f1ae849be6d0ba12bb4b44, type: 3}
+  m_Script: {fileID: 11500000, guid: 484f1a7555e134efbb5f14bab7590129, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Projectiles.SplashProjectile
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Projectiles.RocketProjectile
   poolTag: Cannonball
-  arcHeight: 2

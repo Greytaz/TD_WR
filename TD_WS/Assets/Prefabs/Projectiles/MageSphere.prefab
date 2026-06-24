@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5846748144935504438}
   - component: {fileID: 825339240505399594}
   - component: {fileID: 6267884875748863814}
-  - component: {fileID: 5971325107871920500}
+  - component: {fileID: 5080912730650747389}
   m_Layer: 0
   m_Name: MageSphere
   m_TagString: Untagged
@@ -71,7 +71,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8788159492734244999}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -113,7 +113,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5971325107871920500
+--- !u!114 &5080912730650747389
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,8 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8788159492734244999}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1faa0f29ed298a6499eefb9e65794ca9, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cf1913bb1c744ab5aa0dfb00bc5e0bf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Projectiles.HomingProjectile
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Projectiles.EnergyBeamProjectile
   poolTag: MageSphere
-  isElemental: 1
