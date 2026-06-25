@@ -184,8 +184,7 @@ namespace TowerDefense.UI
                 {
                     damageText += $" ({stats.critChance * 100f:F0}% Crit)";
                 }
-                towerStatsText.text = $"Damage: {damageText}\nRange: {stats.range}\nAttack Speed: {stats.fireRate:F1}/s\n\n" +
-                                     $"[Base T{selectedTower.BaseTier}]  [Body T{selectedTower.BodyTier}]  [Wpn T{selectedTower.WeaponTier}]";
+                towerStatsText.text = $"Damage: {damageText}\nRange: {stats.range}\nAttack Speed: {stats.fireRate:F1}/s";
             }
 
             // Update modular part buttons

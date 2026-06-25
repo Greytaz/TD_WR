@@ -10,7 +10,7 @@ namespace TowerDefense.Projectiles
         private LineRenderer lineRenderer;
         private float lifeTime = 0.15f;
         private float timer = 0f;
-        private Color beamColor = new Color(0.6f, 0.2f, 1f, 1f); // Beautiful Purple/Energy neon
+        [SerializeField] private Color beamColor = new Color(0f, 0.7f, 1f, 1f); // Beautiful Light Blue/Cyan
 
         public override void Initialize(EnemyHealth targetEnemy, TowerTierData towerStats)
         {

@@ -43,6 +43,9 @@ namespace TowerDefense.UI
 
         [Header("Player Progress HUD")]
         public TextMeshProUGUI hudProgressText;
+        public TextMeshProUGUI hudTokensText;
+
+        private RectTransform xpFillRect;
 
         private void Awake()
         {
@@ -123,7 +126,28 @@ namespace TowerDefense.UI
                 int xp = PlayerProgressManager.Instance.CurrentXP;
                 int reqXp = PlayerProgressManager.Instance.GetXPRequiredForNextLevel();
                 int tokens = PlayerProgressManager.Instance.TechTokens;
-                hudProgressText.text = $"Level: {lvl} XP {xp}/{reqXp} Tokens: {tokens}";
+                hudProgressText.text = $"lvl {lvl} xp {xp}/{reqXp}";
+
+                if (hudTokensText != null)
+                {
+                    hudTokensText.text = $"Tokens: {tokens}";
+                }
+
+                if (xpFillRect == null)
+                {
+                    Transform fillTrans = hudProgressText.transform.Find("XPProgressBar/XPProgressFill");
+                    if (fillTrans != null)
+                    {
+                        xpFillRect = fillTrans.GetComponent<RectTransform>();
+                    }
+                }
+
+                if (xpFillRect != null)
+                {
+                    float fill = reqXp > 0 ? Mathf.Clamp01((float)xp / reqXp) : 0f;
+                    xpFillRect.anchorMax = new Vector2(fill, 1f);
+                    xpFillRect.offsetMax = Vector2.zero; // Make sure right offset is reset to prevent deformation
+                }
             }
         }
 

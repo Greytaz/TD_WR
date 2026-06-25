@@ -295,7 +295,16 @@ namespace TowerDefense.Core
             // Save JSON to File
             try
             {
-                string logsDir = Path.Combine(Application.dataPath, "../Logs");
+                string logsDir;
+                if (Application.isMobilePlatform)
+                {
+                    logsDir = Path.Combine(Application.persistentDataPath, "Logs");
+                }
+                else
+                {
+                    logsDir = Path.Combine(Application.dataPath, "../Logs");
+                }
+
                 if (!Directory.Exists(logsDir))
                 {
                     Directory.CreateDirectory(logsDir);

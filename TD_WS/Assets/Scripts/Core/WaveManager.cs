@@ -13,7 +13,7 @@ namespace TowerDefense.Core
 
         [Header("Wave Setup")]
         public List<WaveData> preconfiguredWaves = new List<WaveData>();
-        public float timeBetweenWaves = 15f;
+        public float timeBetweenWaves = 3f;
         public float waveDifficultyScaling = 1.15f; // +15% enemy health per procedural wave
 
         [Header("Boss Settings")]
@@ -199,6 +199,7 @@ namespace TowerDefense.Core
             }
 
             isSpawning = false;
+            CheckWaveCompletion();
         }
 
         private void SpawnEnemy(EnemyData data, List<Vector3> waypoints, float hpMult, float speedMult)

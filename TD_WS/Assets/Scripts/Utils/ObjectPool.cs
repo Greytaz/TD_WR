@@ -67,6 +67,13 @@ namespace TowerDefense.Utils
             for (int i = 0; i < count; i++)
             {
                 GameObject obj = poolDictionary[tag].Dequeue();
+                
+                // If the object was destroyed externally, don't enqueue it back!
+                if (obj == null)
+                {
+                    continue;
+                }
+
                 poolDictionary[tag].Enqueue(obj);
 
                 if (!obj.activeSelf)
@@ -76,7 +83,7 @@ namespace TowerDefense.Utils
                 }
             }
 
-            // If all objects are active, instantiate a new one to grow the pool dynamically
+            // If all objects are active (or some were destroyed), instantiate a new one to grow the pool dynamically
             if (objectToSpawn == null)
             {
                 foreach (var pool in pools)
@@ -102,6 +109,7 @@ namespace TowerDefense.Utils
 
         public void ReturnToPool(GameObject obj, string tag)
         {
+            if (obj == null) return;
             obj.SetActive(false);
             obj.transform.SetParent(transform);
         }

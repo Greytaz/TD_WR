@@ -228,6 +228,15 @@ namespace TowerDefense.Towers
         /// </summary>
         public void RebuildVisuals()
         {
+            // Cache previous rotation if rotatableHead exists
+            Quaternion previousRotation = Quaternion.identity;
+            bool hasPreviousRotation = false;
+            if (rotatableHead != null)
+            {
+                previousRotation = rotatableHead.localRotation;
+                hasPreviousRotation = true;
+            }
+
             // 1. Уничтожаем старые модели
             if (spawnedBase != null) Destroy(spawnedBase);
             if (spawnedBody != null) Destroy(spawnedBody);
@@ -302,6 +311,10 @@ namespace TowerDefense.Towers
             if (spawnedWeapon != null)
             {
                 rotatableHead = spawnedWeapon.transform;
+                if (hasPreviousRotation)
+                {
+                    rotatableHead.localRotation = previousRotation;
+                }
                 Transform fp = spawnedWeapon.transform.Find("FirePoint");
                 if (fp == null) fp = spawnedWeapon.transform;
                 firePoint = fp;
@@ -442,14 +455,20 @@ namespace TowerDefense.Towers
             targetsInRange.Clear();
             if (currentStats == null) return;
 
-            // Find all Colliders in range
-            Collider[] colliders = Physics.OverlapSphere(transform.position, currentStats.range);
-            foreach (var col in colliders)
+            float rangeSqr = currentStats.range * currentStats.range;
+            Vector3 myPos = transform.position;
+
+            var activeEnemies = EnemyHealth.ActiveEnemies;
+            for (int i = 0; i < activeEnemies.Count; i++)
             {
-                EnemyHealth enemy = col.GetComponent<EnemyHealth>();
+                EnemyHealth enemy = activeEnemies[i];
                 if (enemy != null && enemy.enabled && !enemy.IsDead)
                 {
-                    targetsInRange.Add(enemy);
+                    float distSqr = (enemy.transform.position - myPos).sqrMagnitude;
+                    if (distSqr <= rangeSqr)
+                    {
+                        targetsInRange.Add(enemy);
+                    }
                 }
             }
         }

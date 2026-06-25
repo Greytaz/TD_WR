@@ -9,6 +9,8 @@ namespace TowerDefense.Enemies
 {
     public class EnemyHealth : MonoBehaviour
     {
+        public static List<EnemyHealth> ActiveEnemies = new List<EnemyHealth>();
+
         [Header("References")]
         public EnemyData enemyData;
         public Transform healthBarForeground; // Scale on X axis for percentage
@@ -25,6 +27,19 @@ namespace TowerDefense.Enemies
         private Renderer enemyRenderer;
         private Color originalColor;
         private Animator enemyAnimator; // Компонент для воспроизведения анимаций жука
+
+        private void OnEnable()
+        {
+            if (!ActiveEnemies.Contains(this))
+            {
+                ActiveEnemies.Add(this);
+            }
+        }
+
+        private void OnDisable()
+        {
+            ActiveEnemies.Remove(this);
+        }
 
         private void Awake()
         {
