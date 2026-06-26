@@ -126,3 +126,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Projectiles.EnergyBeamProjectile
   poolTag: MageSphere
+  beamColor: {r: 0, g: 0.7, b: 1, a: 1}
