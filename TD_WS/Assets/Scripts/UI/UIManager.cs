@@ -41,6 +41,11 @@ namespace TowerDefense.UI
         public Button continueButton;
         public TextMeshProUGUI bestWaveText;
 
+        [Header("Talent Tree Overlay")]
+        public GameObject talentTreePanel;
+        public Button mainMenuTalentButton;
+        public Button pauseTalentButton;
+
         [Header("Player Progress HUD")]
         public TextMeshProUGUI hudProgressText;
         public TextMeshProUGUI hudTokensText;
@@ -75,6 +80,8 @@ namespace TowerDefense.UI
             if (mainMenuButton != null) mainMenuButton.onClick.AddListener(OnMainMenuClicked);
             if (gameOverMainMenuButton != null) gameOverMainMenuButton.onClick.AddListener(OnMainMenuClicked);
             if (gameOverQuitButton != null) gameOverQuitButton.onClick.AddListener(OnQuitClicked);
+            if (mainMenuTalentButton != null) mainMenuTalentButton.onClick.AddListener(OpenTalentTree);
+            if (pauseTalentButton != null) pauseTalentButton.onClick.AddListener(OpenTalentTree);
 
             HideAllOverlays();
             UpdateSpeedHUD();
@@ -202,6 +209,12 @@ namespace TowerDefense.UI
             {
                 if (PerkChoiceUI.Instance != null && PerkChoiceUI.Instance.IsActive) return;
 
+                if (talentTreePanel != null && talentTreePanel.activeSelf)
+                {
+                    CloseTalentTree();
+                    return;
+                }
+
                 if (GameManager.Instance != null && 
                     (GameManager.Instance.CurrentState == GameState.Playing || GameManager.Instance.CurrentState == GameState.Paused))
                 {
@@ -213,6 +226,7 @@ namespace TowerDefense.UI
         private void OnApplicationFocus(bool hasFocus)
         {
             if (PerkChoiceUI.Instance != null && PerkChoiceUI.Instance.IsActive) return;
+            if (talentTreePanel != null && talentTreePanel.activeSelf) return;
 
             // Pause the game if we lose focus and are currently playing
             if (!hasFocus && GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Playing)
@@ -260,11 +274,50 @@ namespace TowerDefense.UI
             }
         }
 
+        public void OpenTalentTree()
+        {
+            if (talentTreePanel != null)
+            {
+                talentTreePanel.SetActive(true);
+                // Ensure game is paused if we are playing
+                if (GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Playing)
+                {
+                    GameManager.Instance.TogglePause();
+                }
+                
+                // Hide other panels so they don't overlay
+                if (pausePanel != null) pausePanel.SetActive(false);
+                if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+            }
+        }
+
+        public void CloseTalentTree()
+        {
+            if (talentTreePanel != null)
+            {
+                talentTreePanel.SetActive(false);
+                
+                // Return to appropriate panel based on game state
+                if (GameManager.Instance != null)
+                {
+                    if (GameManager.Instance.CurrentState == GameState.Paused)
+                    {
+                        if (pausePanel != null) pausePanel.SetActive(true);
+                    }
+                    else if (GameManager.Instance.CurrentState == GameState.MainMenu)
+                    {
+                        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+                    }
+                }
+            }
+        }
+
         private void HideAllOverlays()
         {
             if (pausePanel != null) pausePanel.SetActive(false);
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
             if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+            if (talentTreePanel != null) talentTreePanel.SetActive(false);
         }
 
         private void OnStartClicked()

@@ -160,5 +160,26 @@ namespace TowerDefense.Core
             SaveProgress(); // saveAfterReward = true
             EventBus.TriggerPlayerProgressChanged();
         }
+
+        public bool SpendTechTokens(int amount)
+        {
+            if (techTokens >= amount)
+            {
+                techTokens -= amount;
+                Debug.Log($"[Progress] Spent {amount} Tech Tokens. Remaining: {techTokens}");
+                SaveProgress();
+                EventBus.TriggerPlayerProgressChanged();
+                return true;
+            }
+            return false;
+        }
+
+        public void RefundTechTokens(int amount)
+        {
+            techTokens += amount;
+            Debug.Log($"[Progress] Refunded {amount} Tech Tokens. Total: {techTokens}");
+            SaveProgress();
+            EventBus.TriggerPlayerProgressChanged();
+        }
     }
 }

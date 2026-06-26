@@ -178,6 +178,15 @@ namespace TowerDefense.Towers
                 RunPerkManager.Instance.ApplyPerkStats(towerData.towerType, stats);
             }
 
+            // Apply Talent Tree damage multiplier
+            if (TalentTreeManager.Instance != null)
+            {
+                float multiplier = TalentTreeManager.Instance.GetTotalDamageMultiplier();
+                stats.damage *= multiplier;
+                stats.minDamage *= multiplier;
+                stats.maxDamage *= multiplier;
+            }
+
             return stats;
         }
 
