@@ -14,7 +14,7 @@ namespace TowerDefense.Core
         [Header("Wave Setup")]
         public List<WaveData> preconfiguredWaves = new List<WaveData>();
         public float timeBetweenWaves = 3f;
-        public float waveDifficultyScaling = 1.15f; // +15% enemy health per procedural wave
+        public float waveDifficultyScaling = 1.10f; // +10% enemy health per wave
 
         [Header("Boss Settings")]
         public EnemyData bossEnemyData;
@@ -132,14 +132,13 @@ namespace TowerDefense.Core
             }
 
             WaveData wave;
-            float hpMult = 1f;
+            float hpMult = Mathf.Pow(waveDifficultyScaling, currentWaveIndex - 1);
             float speedMult = 1f;
 
             // If we ran out of preconfigured waves, generate procedural waves with scaling stats
             if (currentWaveIndex - 1 < preconfiguredWaves.Count)
             {
                 wave = preconfiguredWaves[currentWaveIndex - 1];
-                hpMult = wave.healthMultiplier;
                 speedMult = wave.speedMultiplier;
             }
             else
@@ -147,7 +146,6 @@ namespace TowerDefense.Core
                 // Procedural generation: pick a random preconfigured wave template and scale its health
                 int templateIndex = (currentWaveIndex - 1) % preconfiguredWaves.Count;
                 wave = preconfiguredWaves[templateIndex];
-                hpMult = wave.healthMultiplier * Mathf.Pow(waveDifficultyScaling, currentWaveIndex - preconfiguredWaves.Count);
                 speedMult = wave.speedMultiplier * Mathf.Min(1.5f, 1f + (currentWaveIndex * 0.02f)); // Caps speed scale at +50%
             }
 

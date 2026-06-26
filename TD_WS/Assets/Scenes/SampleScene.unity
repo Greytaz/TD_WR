@@ -4457,7 +4457,7 @@ Transform:
   m_GameObject: {fileID: 1025855952}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.04, y: -0.71, z: -0.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4480,10 +4480,18 @@ MonoBehaviour:
   cellSize: 1.5
   gridOrigin: {x: 0, y: 0, z: 0}
   pathWaypoints:
+  - {x: 1.5, y: 0, z: 1}
+  - {x: 1.5, y: 0, z: 10.5}
+  - {x: 9, y: 0, z: 10.5}
+  - {x: 9, y: 0, z: 19.5}
+  - {x: 1.5, y: 0, z: 19.5}
+  useProceduralPath: 1
+  referencePathWaypoints:
   - {x: 1.51, y: 0, z: 0.99}
   - {x: 1.5, y: 0, z: 10.5}
-  - {x: 1.5, y: 0, z: 19.5}
-  - {x: 20, y: 0, z: 19.5}
+  - {x: 8.93, y: 0, z: 10.5}
+  - {x: 9.13, y: 0, z: 19.5}
+  - {x: 1.4, y: 0, z: 19.5}
 --- !u!1 &1026541104
 GameObject:
   m_ObjectHideFlags: 0

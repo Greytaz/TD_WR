@@ -35,12 +35,22 @@ namespace TowerDefense.Core
             }
 
             towerGrid = new TowerBase[gridWidth, gridHeight];
-            CalculatePathCells();
+            
+            if (Application.isPlaying)
+            {
+                GenerateProceduralPath();
+            }
+            else
+            {
+                CalculatePathCells();
+            }
         }
 
         private void Start()
         {
-            if (Application.isPlaying)
+            // Visual grid is generated inside GenerateProceduralPath if in play mode,
+            // but if we are not in play mode or if it hasn't been generated, let's call it.
+            if (Application.isPlaying && (visualTiles == null || visualTiles.Length == 0))
             {
                 GenerateVisualGrid();
             }
@@ -48,6 +58,12 @@ namespace TowerDefense.Core
 
         private void GenerateVisualGrid()
         {
+            var oldParent = transform.Find("--- grid visualizer ---");
+            if (oldParent != null)
+            {
+                Destroy(oldParent.gameObject);
+            }
+
             GameObject gridVisualParent = new GameObject("--- grid visualizer ---");
             gridVisualParent.transform.SetParent(transform);
 
@@ -157,6 +173,155 @@ namespace TowerDefense.Core
         public List<Vector3> GetPathWaypoints()
         {
             return pathWaypoints;
+        }
+
+        [Header("Procedural Setup")]
+        [Tooltip("Toggle procedural generation. If disabled, loads the handcrafted reference path.")]
+        public bool useProceduralPath = true;
+
+        [Header("Reference Path (Benchmark)")]
+        [Tooltip("The reference handcrafted benchmark route.")]
+        public List<Vector3> referencePathWaypoints = new List<Vector3>()
+        {
+            new Vector3(1.51f, 0f, 0.99f),
+            new Vector3(1.5f, 0f, 10.5f),
+            new Vector3(8.93f, 0f, 10.5f),
+            new Vector3(9.13f, 0f, 19.5f),
+            new Vector3(1.4f, 0f, 19.5f)
+        };
+
+        public HashSet<Vector2Int> GetPathCells()
+        {
+            return pathCells;
+        }
+
+        public List<Vector2Int> GetOrderedPathCells()
+        {
+            List<Vector2Int> list = new List<Vector2Int>();
+            foreach (var wp in pathWaypoints)
+            {
+                Vector3 localPos = wp - gridOrigin;
+                int ix = Mathf.RoundToInt(localPos.x / cellSize);
+                int iz = Mathf.RoundToInt(localPos.z / cellSize);
+                list.Add(new Vector2Int(ix, iz));
+            }
+            return list;
+        }
+
+        public void GenerateProceduralPath()
+        {
+            // Clear existing towers from the grid
+            ClearGrid();
+
+            if (!useProceduralPath)
+            {
+                Debug.Log("[GridManager] Loading reference benchmark path waypoints.");
+                pathWaypoints = new List<Vector3>(referencePathWaypoints);
+                CalculatePathCells();
+                if (Application.isPlaying)
+                {
+                    GenerateVisualGrid();
+                }
+                return;
+            }
+
+            System.Random rand = new System.Random();
+            
+            // Randomly choose between a vertical-start path or a horizontal-start path
+            bool verticalStart = rand.Next(2) == 0;
+
+            pathWaypoints = new List<Vector3>();
+            pathCells.Clear();
+
+            if (verticalStart)
+            {
+                // Vertical-first path (from bottom to top or top to bottom)
+                bool startBottom = rand.Next(2) == 0;
+                
+                // P0 starts on one edge
+                int ix0 = rand.Next(1, gridWidth);
+                int iz0 = startBottom ? 0 : gridHeight;
+
+                // Intermediate turning points
+                int iz1 = startBottom ? rand.Next(3, gridHeight / 2) : rand.Next(gridHeight / 2 + 1, gridHeight - 2);
+                
+                int ix2 = rand.Next(1, gridWidth);
+                while (ix2 == ix0 && gridWidth > 2)
+                {
+                    ix2 = rand.Next(1, gridWidth);
+                }
+
+                int iz3 = startBottom ? rand.Next(gridHeight / 2 + 1, gridHeight - 2) : rand.Next(2, gridHeight / 2);
+                
+                int ix4 = rand.Next(1, gridWidth);
+                while (ix4 == ix2 && gridWidth > 2)
+                {
+                    ix4 = rand.Next(1, gridWidth);
+                }
+
+                pathWaypoints.Add(gridOrigin + new Vector3(ix0 * cellSize, 0f, iz0 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix0 * cellSize, 0f, iz1 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix2 * cellSize, 0f, iz1 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix2 * cellSize, 0f, iz3 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix4 * cellSize, 0f, iz3 * cellSize));
+            }
+            else
+            {
+                // Horizontal-first path (from left to right or right to left)
+                bool startLeft = rand.Next(2) == 0;
+
+                int ix0 = startLeft ? 0 : gridWidth;
+                int iz0 = rand.Next(1, gridHeight);
+
+                int ix1 = startLeft ? rand.Next(3, gridWidth / 2) : rand.Next(gridWidth / 2 + 1, gridWidth - 2);
+                
+                int iz2 = rand.Next(1, gridHeight);
+                while (iz2 == iz0 && gridHeight > 2)
+                {
+                    iz2 = rand.Next(1, gridHeight);
+                }
+
+                int ix3 = startLeft ? rand.Next(gridWidth / 2 + 1, gridWidth - 2) : rand.Next(2, gridWidth / 2);
+                
+                int iz4 = rand.Next(1, gridHeight);
+                while (iz4 == iz2 && gridHeight > 2)
+                {
+                    iz4 = rand.Next(1, gridHeight);
+                }
+
+                pathWaypoints.Add(gridOrigin + new Vector3(ix0 * cellSize, 0f, iz0 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix1 * cellSize, 0f, iz0 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix1 * cellSize, 0f, iz2 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix3 * cellSize, 0f, iz2 * cellSize));
+                pathWaypoints.Add(gridOrigin + new Vector3(ix3 * cellSize, 0f, iz4 * cellSize));
+            }
+
+            CalculatePathCells();
+
+            if (Application.isPlaying)
+            {
+                GenerateVisualGrid();
+            }
+        }
+
+        public void RestoreProceduralPath(List<Vector2Int> path)
+        {
+            ClearGrid();
+
+            pathWaypoints = new List<Vector3>();
+            pathCells.Clear();
+
+            foreach (var cell in path)
+            {
+                pathWaypoints.Add(gridOrigin + new Vector3(cell.x * cellSize, 0f, cell.y * cellSize));
+            }
+
+            CalculatePathCells();
+
+            if (Application.isPlaying)
+            {
+                GenerateVisualGrid();
+            }
         }
 
         public Vector3 GetCellWorldPosition(int x, int z)

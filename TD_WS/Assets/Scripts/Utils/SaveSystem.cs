@@ -28,6 +28,13 @@ namespace TowerDefense.Utils
         }
 
         [System.Serializable]
+        public struct PathCellSaveEntry
+        {
+            public int x;
+            public int z;
+        }
+
+        [System.Serializable]
         public class ActiveRunSaveData
         {
             public int gold;
@@ -35,6 +42,7 @@ namespace TowerDefense.Utils
             public int wave;
             public List<string> activePerks = new List<string>();
             public List<TowerSaveEntry> towers = new List<TowerSaveEntry>();
+            public List<PathCellSaveEntry> pathCells = new List<PathCellSaveEntry>();
         }
 
         private static SaveData LoadData()

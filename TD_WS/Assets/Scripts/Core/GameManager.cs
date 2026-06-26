@@ -83,10 +83,10 @@ namespace TowerDefense.Core
 
         private void ResetGame()
         {
-            // Clear towers from grid
+            // Clear towers from grid and generate a new procedural path
             if (GridManager.Instance != null)
             {
-                GridManager.Instance.ClearGrid();
+                GridManager.Instance.GenerateProceduralPath();
             }
 
             // Deactivate and return all active enemies to the pool
@@ -195,6 +195,15 @@ namespace TowerDefense.Core
                             data.towers.Add(entry);
                         }
                     }
+                }
+
+                // Save procedural path cells to preserve the active run layout
+                foreach (var cell in GridManager.Instance.GetOrderedPathCells())
+                {
+                    SaveSystem.PathCellSaveEntry entry = new SaveSystem.PathCellSaveEntry();
+                    entry.x = cell.x;
+                    entry.z = cell.y;
+                    data.pathCells.Add(entry);
                 }
             }
 
@@ -310,10 +319,27 @@ namespace TowerDefense.Core
                         RunPerkManager.Instance.LoadActiveRunPerks(data.activePerks);
                     }
 
+                    // Restore procedural path from saved data to preserve active run layout
+                    if (GridManager.Instance != null && data.pathCells != null && data.pathCells.Count > 0)
+                    {
+                        List<Vector2Int> loadedPath = new List<Vector2Int>();
+                        foreach (var entry in data.pathCells)
+                        {
+                            loadedPath.Add(new Vector2Int(entry.x, entry.z));
+                        }
+                        GridManager.Instance.RestoreProceduralPath(loadedPath);
+                    }
+
                     // Rebuild grid towers
                     if (GridManager.Instance != null)
                     {
-                        GridManager.Instance.ClearGrid();
+                        // ClearGrid is handled inside RestoreProceduralPath, but let's make sure it's clear
+                        // if we didn't have path data.
+                        if (data.pathCells == null || data.pathCells.Count == 0)
+                        {
+                            GridManager.Instance.ClearGrid();
+                        }
+
                         foreach (var tSave in data.towers)
                         {
                             Data.TowerData tData = GetTowerDataByType(tSave.towerType);

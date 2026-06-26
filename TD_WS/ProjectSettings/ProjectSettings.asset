@@ -901,7 +901,13 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Build: 0
+    Game Performance: 0
+    Legacy Analytics: 0
+    Purchasing: 0
+    UDP: 0
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -924,11 +930,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 23636744-dfc7-4bd8-bf10-629792f3e1d8
+  cloudProjectId: e7a20726-97fe-4ce1-81fc-1840b39aaeb0
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: TD
-  organizationId: yia-yia-yi
+  projectName: TD_WS
+  organizationId: greytaz
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
